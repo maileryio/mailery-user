@@ -1,16 +1,18 @@
 {
-    "name": "maileryio/_____",
+    "name": "maileryio/mailery-user",
     "type": "library",
-    "description": "_____",
+    "description": "User module for Mailery Platform",
     "keywords": [
-        "_____"
+        "mail",
+        "mailer",
+        "user"
     ],
-    "homepage": "https://github.com/maileryio/_____",
+    "homepage": "https://github.com/maileryio/mailery-user",
     "license": "BSD-3-Clause",
     "support": {
-        "source": "https://github.com/maileryio/_____",
-        "issues": "https://github.com/maileryio/_____/issues",
-        "wiki": "https://github.com/maileryio/_____/wiki"
+        "source": "https://github.com/maileryio/mailery-user",
+        "issues": "https://github.com/maileryio/mailery-user/issues",
+        "wiki": "https://github.com/maileryio/mailery-user/wiki"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -18,18 +20,19 @@
         "php": "^7.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.0",
+        "friendsofphp/php-cs-fixer": "^2.16",
+        "hiqdev/composer-config-plugin": "^1.0",
         "phan/phan": "^2.4",
-        "friendsofphp/php-cs-fixer": "^2.16"
+        "phpunit/phpunit": "^9.0"
     },
     "autoload": {
         "psr-4": {
-            "Mailery\\_____\\": "src"
+            "Mailery\\User\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Mailery\\_____\\Tests\\": "tests"
+            "Mailery\\User\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -40,6 +43,9 @@
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"
+        },
+        "config-plugin": {
+            "web": "config/web.php"
         }
     },
     "config": {
