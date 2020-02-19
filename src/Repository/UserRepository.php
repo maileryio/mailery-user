@@ -18,6 +18,7 @@ use Cycle\ORM\Select\Repository;
 use Mailery\User\Entity\User;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
+use Yiisoft\Yii\Cycle\DataReader\SelectDataReader;
 
 class UserRepository extends Repository implements IdentityRepositoryInterface
 {
@@ -27,6 +28,16 @@ class UserRepository extends Repository implements IdentityRepositoryInterface
     public function findActive(): Select
     {
         return $this->select()->where('status', 'active');
+    }
+
+    /**
+     * @param array $scope
+     * @param array $orderBy
+     * @return SelectDataReader
+     */
+    public function findAll(array $scope = [], array $orderBy = []): SelectDataReader
+    {
+        return new SelectDataReader($this->select()->where($scope)->orderBy($orderBy));
     }
 
     /**

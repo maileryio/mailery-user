@@ -20,7 +20,7 @@
         "php": "^7.4",
         "cycle/orm": "^1.2",
         "foxy/foxy": "^1.0",
-        "maileryio/mailery-web": "dev-master",
+        "maileryio/mailery-backend": "dev-master",
         "yiisoft/router": "^3.0@dev"
     },
     "require-dev": {
