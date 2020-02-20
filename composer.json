@@ -21,6 +21,10 @@
         "cycle/orm": "^1.2",
         "foxy/foxy": "^1.0",
         "maileryio/mailery-backend": "dev-master",
+        "maileryio/mailery-dataview": "dev-master",
+        "maileryio/yii-dataview": "dev-master",
+        "maileryio/yii-form": "dev-master",
+        "maileryio/yii-widget-link": "dev-master",
         "yiisoft/router": "^3.0@dev"
     },
     "require-dev": {

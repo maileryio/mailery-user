@@ -75,4 +75,42 @@ class UserRepository extends Repository implements IdentityRepositoryInterface
             })
             ->fetchOne();
     }
+
+    /**
+     * @param string $email
+     * @param User|null $exclude
+     * @return User|null
+     */
+    public function findByEmail(string $email, ?User $exclude = null): ?User
+    {
+        return $this
+            ->select()
+            ->where(function (QueryBuilder $select) use ($email, $exclude) {
+                $select->where('email', $email);
+
+                if ($exclude !== null) {
+                    $select->where('id', '<>', $exclude->getId());
+                }
+            })
+            ->fetchOne();
+    }
+
+    /**
+     * @param string $username
+     * @param User|null $exclude
+     * @return User|null
+     */
+    public function findByUsername(string $username, ?User $exclude = null): ?User
+    {
+        return $this
+            ->select()
+            ->where(function (QueryBuilder $select) use ($username, $exclude) {
+                $select->where('username', $username);
+
+                if ($exclude !== null) {
+                    $select->where('id', '<>', $exclude->getId());
+                }
+            })
+            ->fetchOne();
+    }
 }

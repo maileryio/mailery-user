@@ -17,7 +17,6 @@ use Cycle\Annotated\Annotation\Entity;
 use Cycle\Annotated\Annotation\Table;
 use Cycle\Annotated\Annotation\Table\Index;
 use Yiisoft\Auth\IdentityInterface;
-use Yiisoft\Security\PasswordHasher;
 
 /**
  * @Entity(
@@ -42,31 +41,31 @@ class User implements IdentityInterface
 
     /**
      * @Column(type = "primary")
-     * @var int
+     * @var int|null
      */
-    private int $id;
+    private $id;
 
     /**
      * @Column(type = "string(32)")
      * @var string
      */
-    private string $email;
+    private $email;
 
     /**
      * @Column(type = "string(32)")
      * @var string
      */
-    private string $username;
+    private $username;
 
     /**
      * @Column(type = "string(64)", nullable = true)
      */
-    private string $password;
+    private $password;
 
     /**
      * @Column(type = "enum(active, disabled)", default = "active")
      */
-    private string $status = 'active';
+    private $status = 'active';
 
     /**
      * @return string|null
@@ -136,7 +135,7 @@ class User implements IdentityInterface
      */
     public function setPassword(string $password): self
     {
-        $this->password = (new PasswordHasher())->hash($password);
+        $this->password = $password;
         return $this;
     }
 

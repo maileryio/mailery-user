@@ -30,6 +30,14 @@ return [
         'routes' => [
             Route::get('/user/default/index', [DefaultController::class, 'index'])
                 ->name('/user/default/index'),
+            Route::get('/user/default/view/{id:\d+}', [DefaultController::class, 'view'])
+                ->name('/user/default/view'),
+            Route::methods(['GET', 'POST'], '/user/default/create', [DefaultController::class, 'create'])
+                ->name('/user/default/create'),
+            Route::methods(['GET', 'POST'], '/user/default/edit/{id:\d+}', [DefaultController::class, 'edit'])
+                ->name('/user/default/edit'),
+            Route::delete('/user/default/delete/{id:\d+}', [DefaultController::class, 'delete'])
+                ->name('/user/default/delete'),
         ],
     ],
 ];
