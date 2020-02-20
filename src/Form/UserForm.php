@@ -134,12 +134,18 @@ class UserForm extends Form
                 ->addConstraint($emailConstraint),
             'username' => F::text('Username')
                 ->addConstraint(new Constraints\NotBlank())
+                ->addConstraint(new Constraints\Length([
+                    'min' => 4,
+                ]))
                 ->addConstraint(new Constraints\Regex([
                     'pattern' => '/^[a-zA-Z0-9]+$/i',
                 ]))
                 ->addConstraint($usernameConstraint),
             'password' => F::password('Password')
-                ->addConstraint(new Constraints\NotBlank()),
+                ->addConstraint(new Constraints\NotBlank())
+                ->addConstraint(new Constraints\Length([
+                    'min' => 6,
+                ])),
             'confirmPassword' => F::password('Confirm password')
                 ->addConstraint(new Constraints\NotBlank())
                 ->addConstraint($confirmPasswordConstraint),

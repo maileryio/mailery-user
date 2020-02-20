@@ -19,6 +19,7 @@ $this->setTitle($user->getUsername());
             <div class="btn-toolbar float-right">
                 <?= Link::widget()
                     ->label(Icon::widget()->name('delete')->options(['class' => 'mr-1']) . ' Delete')
+                    ->method('delete')
                     ->href($urlGenerator->generate('/user/default/delete', ['id' => $user->getId()]))
                     ->confirm('Are you sure?')
                     ->options([

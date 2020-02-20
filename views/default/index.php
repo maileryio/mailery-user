@@ -5,6 +5,7 @@ use Mailery\Widget\Dataview\Columns\ActionColumn;
 use Mailery\Widget\Dataview\Columns\DataColumn;
 use Mailery\Widget\Dataview\Columns\SerialColumn;
 use Mailery\Widget\Dataview\GridView\LinkPager;
+use Mailery\Widget\Link\Link;
 use Mailery\User\Entity\User;
 use Mailery\Icon\Icon;
 use Yiisoft\Html\Html;
@@ -98,18 +99,14 @@ $this->setTitle('All Users');
                             );
                         })
                         ->delete(function (User $data, int $index) use($urlGenerator) {
-                            return Html::a(
-                                Icon::widget()->name('delete'),
-                                $urlGenerator->generate('/user/default/delete', ['id' => $data->getId()]),
-                                [
-                                    'is' => 'link',
+                            return Link::widget()
+                                ->label(Icon::widget()->name('delete')->options(['class' => 'mr-1']))
+                                ->method('delete')
+                                ->href($urlGenerator->generate('/user/default/delete', ['id' => $data->getId()]))
+                                ->confirm('Are you sure?')
+                                ->options([
                                     'class' => 'text-decoration-none text-danger',
-                                    'data' => [
-                                        'method' => 'delete',
-                                        'confirm' => 'Are you sure?',
-                                    ],
-                                ]
-                            );
+                                ]);
                         }),
                 ]);
             ?>
