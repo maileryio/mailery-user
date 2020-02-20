@@ -20,8 +20,8 @@
         "php": "^7.4",
         "cycle/orm": "^1.2",
         "foxy/foxy": "^1.0",
-        "maileryio/mailery-dataview": "dev-master",
-        "maileryio/yii-dataview": "dev-master",
+        "form-manager/form-manager": "^6.0",
+        "maileryio/widget-dataview": "dev-master",
         "maileryio/yii-form": "dev-master",
         "maileryio/yii-widget-link": "dev-master",
         "yiisoft/router": "^3.0@dev"
