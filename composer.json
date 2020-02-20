@@ -22,8 +22,8 @@
         "foxy/foxy": "^1.0",
         "form-manager/form-manager": "^6.0",
         "maileryio/widget-dataview": "dev-master",
+        "maileryio/widget-link": "dev-master",
         "maileryio/yii-form": "dev-master",
-        "maileryio/yii-widget-link": "dev-master",
         "yiisoft/router": "^3.0@dev"
     },
     "require-dev": {
