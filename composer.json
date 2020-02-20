@@ -20,7 +20,6 @@
         "php": "^7.4",
         "cycle/orm": "^1.2",
         "foxy/foxy": "^1.0",
-        "maileryio/mailery-backend": "dev-master",
         "maileryio/mailery-dataview": "dev-master",
         "maileryio/yii-dataview": "dev-master",
         "maileryio/yii-form": "dev-master",
@@ -54,7 +53,7 @@
         },
         "config-plugin": {
             "params": "config/params.php",
-            "backend": "config/backend.php"
+            "web": "config/web.php"
         }
     },
     "config": {
