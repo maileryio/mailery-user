@@ -1,6 +1,6 @@
 <?php
 
-use Mailery\Dataview\DetailView;
+use Mailery\Widget\Dataview\DetailView;
 use Mailery\Icon\Icon;
 use Mailery\Widget\Link\Link;
 use Mailery\User\Entity\User;

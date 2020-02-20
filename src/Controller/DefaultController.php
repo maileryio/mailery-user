@@ -20,7 +20,7 @@ use Mailery\User\Repository\UserRepository;
 use Mailery\User\Entity\User;
 use Mailery\User\Form\UserForm;
 use Yiisoft\Data\Reader\Sort;
-use Mailery\Dataview\Paginator\OffsetPaginator;
+use Mailery\Widget\Dataview\Paginator\OffsetPaginator;
 use Yiisoft\Router\UrlGeneratorInterface as UrlGenerator;
 use Yiisoft\Http\Method;
 use Cycle\ORM\Transaction;

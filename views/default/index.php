@@ -1,10 +1,10 @@
 <?php
 
-use Mailery\Dataview\GridView;
-use Mailery\Dataview\Columns\ActionColumn;
-use Mailery\Dataview\Columns\DataColumn;
-use Mailery\Dataview\Columns\SerialColumn;
-use Mailery\Dataview\GridView\LinkPager;
+use Mailery\Widget\Dataview\GridView;
+use Mailery\Widget\Dataview\Columns\ActionColumn;
+use Mailery\Widget\Dataview\Columns\DataColumn;
+use Mailery\Widget\Dataview\Columns\SerialColumn;
+use Mailery\Widget\Dataview\GridView\LinkPager;
 use Mailery\User\Entity\User;
 use Mailery\Icon\Icon;
 use Yiisoft\Html\Html;
