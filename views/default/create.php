@@ -1,6 +1,6 @@
 <?php
 
-use Mailery\Form\FormRenderer;
+use Mailery\Widget\Form\FormRenderer;
 
 /** @var Mailery\Web\View\WebView $this */
 /** @var Psr\Http\Message\ServerRequestInterface $request */

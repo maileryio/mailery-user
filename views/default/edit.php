@@ -1,6 +1,6 @@
 <?php
 
-use Mailery\Form\FormRenderer;
+use Mailery\Widget\Form\FormRenderer;
 use Mailery\Icon\Icon;
 
 /** @var Mailery\Web\View\WebView $this */
