@@ -23,7 +23,7 @@
         "form-manager/form-manager": "^6.0",
         "maileryio/widget-dataview": "dev-master",
         "maileryio/widget-link": "dev-master",
-        "maileryio/yii-form": "dev-master",
+        "maileryio/widget-form": "dev-master",
         "yiisoft/router": "^3.0@dev"
     },
     "require-dev": {
