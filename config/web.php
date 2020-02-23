@@ -11,33 +11,15 @@ declare(strict_types=1);
  */
 
 use Cycle\ORM\ORMInterface;
-use Mailery\Menu\Sidebar\SidebarMenuInterface;
 use Mailery\User\Entity\User as UserEntity;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
-use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Yii\Web\Session\Session;
 use Yiisoft\Yii\Web\Session\SessionInterface;
 use Yiisoft\Yii\Web\User\User as WebUser;
 
 return [
-    SidebarMenuInterface::class => [
-        'setItems()' => [
-            'items' => [
-                'users' => [
-                    'label' => function () {
-                        return 'Users';
-                    },
-                    'icon' => 'users',
-                    'url' => function (ContainerInterface $container) {
-                        return $container->get(UrlGeneratorInterface::class)
-                            ->generate('/user/default/index');
-                    },
-                ],
-            ],
-        ],
-    ],
     SessionInterface::class => [
         '__class' => Session::class,
         '__construct()' => [

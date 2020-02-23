@@ -11,7 +11,11 @@ declare(strict_types=1);
  */
 
 use Mailery\User\Controller\DefaultController;
+use Mailery\User\Controller\UserController;
+use Mailery\Menu\MenuItem;
+use Opis\Closure\SerializableClosure;
 use Yiisoft\Router\Route;
+use Yiisoft\Router\UrlGeneratorInterface;
 
 return [
     'cycle.common' => [
@@ -38,6 +42,30 @@ return [
                 ->name('/user/default/edit'),
             Route::delete('/user/default/delete/{id:\d+}', [DefaultController::class, 'delete'])
                 ->name('/user/default/delete'),
+            Route::post('/user/default/logout', [UserController::class, 'logout'])
+                ->name('/user/default/logout'),
+        ],
+    ],
+
+    'menu' => [
+        'navbar' => [
+            'items' => [
+                'users' => (new MenuItem())
+                    ->withLabel('Sign out')
+                    ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {
+                        return $urlGenerator->generate('/user/default/logout');
+                    })),
+            ],
+        ],
+        'sidebar' => [
+            'items' => [
+                'users' => (new MenuItem())
+                    ->withLabel('Users')
+                    ->withIcon('users')
+                    ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {
+                        return $urlGenerator->generate('/user/default/index');
+                    })),
+            ],
         ],
     ],
 ];
