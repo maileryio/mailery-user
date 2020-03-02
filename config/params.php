@@ -32,17 +32,17 @@ return [
 
     'router' => [
         'routes' => [
-            Route::get('/user/default/index', [DefaultController::class, 'index'])
+            '/user/default/index' => Route::get('/user/default/index', [DefaultController::class, 'index'])
                 ->name('/user/default/index'),
-            Route::get('/user/default/view/{id:\d+}', [DefaultController::class, 'view'])
+            '/user/default/view' => Route::get('/user/default/view/{id:\d+}', [DefaultController::class, 'view'])
                 ->name('/user/default/view'),
-            Route::methods(['GET', 'POST'], '/user/default/create', [DefaultController::class, 'create'])
+            '/user/default/create' => Route::methods(['GET', 'POST'], '/user/default/create', [DefaultController::class, 'create'])
                 ->name('/user/default/create'),
-            Route::methods(['GET', 'POST'], '/user/default/edit/{id:\d+}', [DefaultController::class, 'edit'])
+            '/user/default/edit' => Route::methods(['GET', 'POST'], '/user/default/edit/{id:\d+}', [DefaultController::class, 'edit'])
                 ->name('/user/default/edit'),
-            Route::delete('/user/default/delete/{id:\d+}', [DefaultController::class, 'delete'])
+            '/user/default/delete' => Route::delete('/user/default/delete/{id:\d+}', [DefaultController::class, 'delete'])
                 ->name('/user/default/delete'),
-            Route::post('/user/default/logout', [UserController::class, 'logout'])
+            '/user/default/logout' => Route::post('/user/default/logout', [UserController::class, 'logout'])
                 ->name('/user/default/logout'),
         ],
     ],
