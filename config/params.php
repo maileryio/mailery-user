@@ -50,20 +50,19 @@ return [
     'menu' => [
         'navbar' => [
             'items' => [
-                'users' => (new MenuItem())
-                    ->withLabel('Sign out')
+                'system' => (new MenuItem())
+                    ->withLabel('System')
+                    ->withChildItems([
+                        'users' => (new MenuItem())
+                            ->withLabel('Users')
+                            ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {
+                                return $urlGenerator->generate('/user/default/index');
+                            })),
+                    ]),
+                'profile' => (new MenuItem())
+                    ->withLabel('My profile')
                     ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {
                         return $urlGenerator->generate('/user/default/logout');
-                    })),
-            ],
-        ],
-        'sidebar' => [
-            'items' => [
-                'users' => (new MenuItem())
-                    ->withLabel('Users')
-                    ->withIcon('users')
-                    ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {
-                        return $urlGenerator->generate('/user/default/index');
                     })),
             ],
         ],
