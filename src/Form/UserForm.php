@@ -83,6 +83,8 @@ class UserForm extends Form
         /** @var UserRepository $userRepo */
         $userRepo = $this->orm->getRepository(User::class);
 
+        $statusOptions = $this->getStatusOptions();
+
         $emailConstraint = new Constraints\Callback([
             'callback' => function ($value, ExecutionContextInterface $context) use($userRepo) {
                 if (empty($value)) {
@@ -128,6 +130,11 @@ class UserForm extends Form
         ]);
 
         return [
+            'status' => F::select('Status', $statusOptions)
+                ->addConstraint(new Constraints\NotBlank())
+                ->addConstraint(new Constraints\Choice([
+                    'choices' => array_keys($statusOptions),
+                ])),
             'email' => F::text('Email')
                 ->addConstraint(new Constraints\NotBlank())
                 ->addConstraint(new Constraints\Email())
@@ -151,6 +158,17 @@ class UserForm extends Form
                 ->addConstraint($confirmPasswordConstraint),
 
             '' => F::submit($this->user === null ? 'Create' : 'Update'),
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getStatusOptions(): array
+    {
+        return [
+            User::STATUS_ACTIVE => 'Active',
+            User::STATUS_DISABLED => 'Disabled',
         ];
     }
 

@@ -27,7 +27,7 @@ use Cycle\ORM\Transaction;
 
 class DefaultController extends Controller
 {
-    private const PAGINATION_INDEX = 5;
+    private const PAGINATION_INDEX = 10;
 
     /**
      * @param Request $request
@@ -36,7 +36,9 @@ class DefaultController extends Controller
      */
     public function index(Request $request, ORMInterface $orm): Response
     {
-        $pageNum = (int) $request->getAttribute('page', 1);
+        $queryParams = $request->getQueryParams();
+        $pageNum = (int) ($queryParams['page'] ?? 1);
+
         /** @var UserRepository $userRepo */
         $userRepo = $orm->getRepository(User::class);
 

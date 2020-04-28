@@ -16,12 +16,12 @@ use Yiisoft\Html\Html;
 /** @var Yiisoft\Data\Reader\DataReaderInterface $dataReader*/
 /** @var Yiisoft\Data\Paginator\PaginatorInterface $paginator */
 
-$this->setTitle('All Users');
+$this->setTitle('All users');
 
 ?><div class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h1 class="h2">All Users</h1>
+            <h1 class="h2">All users</h1>
             <div class="btn-toolbar float-right">
                 <form class="form-inline float-left">
                     <div class="input-group mx-sm-1 mb-2">
@@ -38,7 +38,7 @@ $this->setTitle('All Users');
                 </button>
                 <a class="btn btn-sm btn-primary mx-sm-1 mb-2" href="<?= $urlGenerator->generate('/user/default/create') ?>">
                     <?= Icon::widget()->name('plus')->options(['class' => 'mr-1']); ?>
-                    New User
+                    Add new user
                 </a>
             </div>
         </div>
@@ -60,9 +60,6 @@ $this->setTitle('All Users');
                 'class' => 'text-center text-muted mt-4 mb-4',
             ])
             ->columns([
-                (new SerialColumn())
-                    ->header('#')
-                    ->paginator($paginator),
                 (new DataColumn())
                     ->header('Username')
                     ->content(function (User $data, int $index) {
@@ -70,8 +67,11 @@ $this->setTitle('All Users');
                     }),
                 (new DataColumn())
                     ->header('Email')
-                    ->content(function (User $data, int $index) {
-                        return $data->getEmail();
+                    ->content(function (User $data, int $index) use($urlGenerator) {
+                        return Html::a(
+                            $data->getEmail(),
+                            $urlGenerator->generate('/user/default/view', ['id' => $data->getId()])
+                        );
                     }),
                 (new DataColumn())
                     ->header('Status')
@@ -79,19 +79,11 @@ $this->setTitle('All Users');
                         return $data->getStatus();
                     }),
                 (new ActionColumn())
-                    ->header('Actions')
                     ->contentOptions([
-                        'style' => 'width: 120px;',
+                        'style' => 'width: 80px;',
                     ])
-                    ->view(function (User $data, int $index) use($urlGenerator) {
-                        return Html::a(
-                            Icon::widget()->name('eye'),
-                            $urlGenerator->generate('/user/default/view', ['id' => $data->getId()]),
-                            [
-                                'class' => 'text-decoration-none mr-3',
-                            ]
-                        );
-                    })
+                    ->header('Edit')
+                    ->view('')
                     ->update(function (User $data, int $index) use($urlGenerator) {
                         return Html::a(
                             Icon::widget()->name('pencil'),
@@ -101,6 +93,14 @@ $this->setTitle('All Users');
                             ]
                         );
                     })
+                    ->delete(''),
+                (new ActionColumn())
+                    ->contentOptions([
+                        'style' => 'width: 80px;',
+                    ])
+                    ->header('Delete')
+                    ->view('')
+                    ->update('')
                     ->delete(function (User $data, int $index) use($urlGenerator) {
                         return Link::widget()
                             ->label(Icon::widget()->name('delete')->options(['class' => 'mr-1']))
