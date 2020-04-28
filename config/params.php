@@ -10,9 +10,9 @@ declare(strict_types=1);
  * @copyright Copyright (c) 2020, Mailery (https://mailery.io/)
  */
 
+use Mailery\Menu\MenuItem;
 use Mailery\User\Controller\DefaultController;
 use Mailery\User\Controller\UserController;
-use Mailery\Menu\MenuItem;
 use Opis\Closure\SerializableClosure;
 use Yiisoft\Router\Route;
 use Yiisoft\Router\UrlGeneratorInterface;

@@ -82,6 +82,7 @@ class User implements IdentityInterface
     public function setId(int $id): self
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -100,6 +101,7 @@ class User implements IdentityInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
         return $this;
     }
 
@@ -118,6 +120,7 @@ class User implements IdentityInterface
     public function setUsername(string $username): self
     {
         $this->username = $username;
+
         return $this;
     }
 
@@ -136,6 +139,7 @@ class User implements IdentityInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
         return $this;
     }
 
@@ -154,6 +158,7 @@ class User implements IdentityInterface
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 }

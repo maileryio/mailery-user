@@ -12,18 +12,18 @@ declare(strict_types=1);
 
 namespace Mailery\User\Controller;
 
-use Mailery\User\Controller;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Cycle\ORM\ORMInterface;
-use Mailery\User\Repository\UserRepository;
+use Cycle\ORM\Transaction;
+use Mailery\User\Controller;
 use Mailery\User\Entity\User;
 use Mailery\User\Form\UserForm;
-use Yiisoft\Data\Reader\Sort;
+use Mailery\User\Repository\UserRepository;
 use Mailery\Widget\Dataview\Paginator\OffsetPaginator;
-use Yiisoft\Router\UrlGeneratorInterface as UrlGenerator;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Yiisoft\Data\Reader\Sort;
 use Yiisoft\Http\Method;
-use Cycle\ORM\Transaction;
+use Yiisoft\Router\UrlGeneratorInterface as UrlGenerator;
 
 class DefaultController extends Controller
 {
@@ -52,6 +52,7 @@ class DefaultController extends Controller
 
     /**
      * @param Request $request
+     * @param ORMInterface $orm
      * @return Response
      */
     public function view(Request $request, ORMInterface $orm): Response

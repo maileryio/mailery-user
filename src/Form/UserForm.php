@@ -1,20 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
+/**
+ * User module for Mailery Platform
+ * @link      https://github.com/maileryio/mailery-user
+ * @package   Mailery\User
+ * @license   BSD-3-Clause
+ * @copyright Copyright (c) 2020, Mailery (https://mailery.io/)
+ */
+
 namespace Mailery\User\Form;
 
+use Cycle\ORM\ORMInterface;
+use Cycle\ORM\Transaction;
+use FormManager\Factory as F;
+use FormManager\Form;
 use Mailery\User\Entity\User;
+use Mailery\User\Repository\UserRepository;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use FormManager\Form;
-use FormManager\Factory as F;
-use Cycle\ORM\Transaction;
-use Cycle\ORM\ORMInterface;
 use Yiisoft\Security\PasswordHasher;
-use Mailery\User\Repository\UserRepository;
 
 class UserForm extends Form
 {
-
     /**
      * @var ORMInterface
      */
@@ -26,7 +35,7 @@ class UserForm extends Form
     private ?User $user;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __construct(ORMInterface $orm)
     {
@@ -86,7 +95,7 @@ class UserForm extends Form
         $statusOptions = $this->getStatusOptions();
 
         $emailConstraint = new Constraints\Callback([
-            'callback' => function ($value, ExecutionContextInterface $context) use($userRepo) {
+            'callback' => function ($value, ExecutionContextInterface $context) use ($userRepo) {
                 if (empty($value)) {
                     return;
                 }
@@ -97,11 +106,11 @@ class UserForm extends Form
                         ->atPath('email')
                         ->addViolation();
                 }
-            }
+            },
         ]);
 
         $usernameConstraint = new Constraints\Callback([
-            'callback' => function ($value, ExecutionContextInterface $context) use($userRepo) {
+            'callback' => function ($value, ExecutionContextInterface $context) use ($userRepo) {
                 if (empty($value)) {
                     return;
                 }
@@ -112,7 +121,7 @@ class UserForm extends Form
                         ->atPath('username')
                         ->addViolation();
                 }
-            }
+            },
         ]);
 
         $confirmPasswordConstraint = new Constraints\Callback([
@@ -126,7 +135,7 @@ class UserForm extends Form
                         ->atPath('confirmPassword')
                         ->addViolation();
                 }
-            }
+            },
         ]);
 
         return [
@@ -171,5 +180,4 @@ class UserForm extends Form
             User::STATUS_DISABLED => 'Disabled',
         ];
     }
-
 }
