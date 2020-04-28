@@ -12,23 +12,19 @@ declare(strict_types=1);
 
 namespace Mailery\User\Entity;
 
-use Cycle\Annotated\Annotation\Column;
-use Cycle\Annotated\Annotation\Entity;
-use Cycle\Annotated\Annotation\Table;
-use Cycle\Annotated\Annotation\Table\Index;
 use Yiisoft\Auth\IdentityInterface;
 
 /**
- * @Entity(
+ * @Cycle\Annotated\Annotation\Entity(
  *      table = "users",
  *      repository = "Mailery\User\Repository\UserRepository",
  *      mapper = "Yiisoft\Yii\Cycle\Mapper\TimestampedMapper"
  * )
- * @Table(
+ * @Cycle\Annotated\Annotation\Table(
  *      indexes = {
- *          @Index(columns = {"email"}, unique = true),
- *          @Index(columns = {"username"}, unique = true),
- *          @Index(columns = {"status"})
+ *          @Cycle\Annotated\Annotation\Table\Index(columns = {"email"}, unique = true),
+ *          @Cycle\Annotated\Annotation\Table\Index(columns = {"username"}, unique = true),
+ *          @Cycle\Annotated\Annotation\Table\Index(columns = {"status"})
  *      }
  * )
  */
@@ -40,30 +36,30 @@ class User implements IdentityInterface
     const PASSWORD_RESET_TOKEN_EXPIRE = 3600;
 
     /**
-     * @Column(type = "primary")
+     * @Cycle\Annotated\Annotation\Column(type = "primary")
      * @var int|null
      */
     private $id;
 
     /**
-     * @Column(type = "string(32)")
+     * @Cycle\Annotated\Annotation\Column(type = "string(32)")
      * @var string
      */
     private $email;
 
     /**
-     * @Column(type = "string(32)")
+     * @Cycle\Annotated\Annotation\Column(type = "string(32)")
      * @var string
      */
     private $username;
 
     /**
-     * @Column(type = "string(64)", nullable = true)
+     * @Cycle\Annotated\Annotation\Column(type = "string(64)", nullable = true)
      */
     private $password;
 
     /**
-     * @Column(type = "enum(active, disabled)", default = "active")
+     * @Cycle\Annotated\Annotation\Column(type = "enum(active, disabled)", default = "active")
      */
     private $status = 'active';
 

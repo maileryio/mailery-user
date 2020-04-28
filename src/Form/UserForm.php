@@ -30,7 +30,7 @@ class UserForm extends Form
     private ORMInterface $orm;
 
     /**
-     * @var User
+     * @var User|null
      */
     private ?User $user;
 
@@ -59,10 +59,14 @@ class UserForm extends Form
     }
 
     /**
-     * @return User
+     * @return User|null
      */
-    public function save(): User
+    public function save(): ?User
     {
+        if (!$this->isValid()) {
+            return null;
+        }
+
         $email = $this['email']->getValue();
         $username = $this['username']->getValue();
         $password = $this['password']->getValue();
@@ -89,8 +93,7 @@ class UserForm extends Form
      */
     private function inputs(): array
     {
-        /** @var UserRepository $userRepo */
-        $userRepo = $this->orm->getRepository(User::class);
+        $userRepo = $this->getUserRepository($this->orm);
 
         $statusOptions = $this->getStatusOptions();
 
@@ -179,5 +182,14 @@ class UserForm extends Form
             User::STATUS_ACTIVE => 'Active',
             User::STATUS_DISABLED => 'Disabled',
         ];
+    }
+
+    /**
+     * @param ORMInterface $orm
+     * @return UserRepository
+     */
+    private function getUserRepository(ORMInterface $orm): UserRepository
+    {
+        return $orm->getRepository(User::class);
     }
 }

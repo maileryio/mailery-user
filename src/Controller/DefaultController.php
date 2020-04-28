@@ -39,10 +39,7 @@ class DefaultController extends Controller
         $queryParams = $request->getQueryParams();
         $pageNum = (int) ($queryParams['page'] ?? 1);
 
-        /** @var UserRepository $userRepo */
-        $userRepo = $orm->getRepository(User::class);
-
-        $dataReader = $userRepo->findAll()->withSort((new Sort([]))->withOrderString('username'));
+        $dataReader = $this->getUserRepository($orm)->getDataReader()->withSort((new Sort([]))->withOrderString('username'));
         $paginator = (new OffsetPaginator($dataReader))
             ->withPageSize(self::PAGINATION_INDEX)
             ->withCurrentPage($pageNum);
@@ -57,11 +54,8 @@ class DefaultController extends Controller
      */
     public function view(Request $request, ORMInterface $orm): Response
     {
-        /** @var UserRepository $userRepo */
-        $userRepo = $orm->getRepository(User::class);
-
         $userId = $request->getAttribute('id');
-        if (empty($userId) || ($user = $userRepo->findByPK($userId)) === null) {
+        if (empty($userId) || ($user = $this->getUserRepository($orm)->findByPK($userId)) === null) {
             return $this->getResponseFactory()->createResponse(404);
         }
 
@@ -81,14 +75,15 @@ class DefaultController extends Controller
                 'action' => $request->getUri()->getPath(),
                 'method' => 'post',
                 'enctype' => 'multipart/form-data',
-            ]);
+            ])
+        ;
 
         $submitted = $request->getMethod() === Method::POST;
 
         if ($submitted) {
             $userForm->loadFromServerRequest($request);
 
-            if ($userForm->isValid() && ($user = $userForm->save()) !== null) {
+            if (($user = $userForm->save()) !== null) {
                 return $this->redirect($urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
             }
         }
@@ -105,28 +100,26 @@ class DefaultController extends Controller
      */
     public function edit(Request $request, ORMInterface $orm, UserForm $userForm, UrlGenerator $urlGenerator): Response
     {
-        /** @var UserRepository $userRepo */
-        $userRepo = $orm->getRepository(User::class);
-
         $userId = $request->getAttribute('id');
-        if (empty($userId) || ($user = $userRepo->findByPK($userId)) === null) {
+        if (empty($userId) || ($user = $this->getUserRepository($orm)->findByPK($userId)) === null) {
             return $this->getResponseFactory()->createResponse(404);
         }
 
         $userForm
+            ->withUser($user)
             ->setAttributes([
                 'action' => $request->getUri()->getPath(),
                 'method' => 'post',
                 'enctype' => 'multipart/form-data',
             ])
-            ->withUser($user);
+        ;
 
         $submitted = $request->getMethod() === Method::POST;
 
         if ($submitted) {
             $userForm->loadFromServerRequest($request);
 
-            if ($userForm->isValid() && ($user = $userForm->save()) !== null) {
+            if (($user = $userForm->save()) !== null) {
                 return $this->redirect($urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
             }
         }
@@ -142,11 +135,8 @@ class DefaultController extends Controller
      */
     public function delete(Request $request, ORMInterface $orm, UrlGenerator $urlGenerator): Response
     {
-        /** @var UserRepository $userRepo */
-        $userRepo = $orm->getRepository(User::class);
-
         $userId = $request->getAttribute('id');
-        if (empty($userId) || ($user = $userRepo->findByPK($userId)) === null) {
+        if (empty($userId) || ($user = $this->getUserRepository($orm)->findByPK($userId)) === null) {
             return $this->getResponseFactory()->createResponse(404);
         }
 
@@ -155,5 +145,14 @@ class DefaultController extends Controller
         $tr->run();
 
         return $this->redirect($urlGenerator->generate('/user/default/index'));
+    }
+
+    /**
+     * @param ORMInterface $orm
+     * @return UserRepository
+     */
+    private function getUserRepository(ORMInterface $orm): UserRepository
+    {
+        return $orm->getRepository(User::class);
     }
 }
