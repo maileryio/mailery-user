@@ -84,7 +84,7 @@ $this->setTitle('All users');
                     ->view('')
                     ->update(function (User $data, int $index) use ($urlGenerator) {
                         return Html::a(
-                            Icon::widget()->name('pencil'),
+                            (string) Icon::widget()->name('pencil'),
                             $urlGenerator->generate('/user/default/edit', ['id' => $data->getId()]),
                             [
                                 'class' => 'text-decoration-none mr-3',
@@ -101,7 +101,7 @@ $this->setTitle('All users');
                     ->update('')
                     ->delete(function (User $data, int $index) use ($urlGenerator) {
                         return Link::widget()
-                            ->label(Icon::widget()->name('delete')->options(['class' => 'mr-1']))
+                            ->label((string) Icon::widget()->name('delete')->options(['class' => 'mr-1']))
                             ->method('delete')
                             ->href($urlGenerator->generate('/user/default/delete', ['id' => $data->getId()]))
                             ->confirm('Are you sure?')

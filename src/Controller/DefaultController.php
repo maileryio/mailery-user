@@ -119,7 +119,7 @@ class DefaultController extends Controller
         if ($submitted) {
             $userForm->loadFromServerRequest($request);
 
-            if (($user = $userForm->save()) !== null) {
+            if ($userForm->save()) {
                 return $this->redirect($urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
             }
         }
