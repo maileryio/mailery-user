@@ -18,6 +18,12 @@ use Yiisoft\Router\Route;
 use Yiisoft\Router\UrlGeneratorInterface;
 
 return [
+    'usersNavbarMenuItem' => (new MenuItem())
+        ->withLabel('Users')
+        ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {
+            return $urlGenerator->generate('/user/default/index');
+        })),
+
     'cycle.common' => [
         'entityPaths' => [
             '@vendor/maileryio/mailery-user/src/Entity',
@@ -50,15 +56,6 @@ return [
     'menu' => [
         'navbar' => [
             'items' => [
-                'system' => (new MenuItem())
-                    ->withLabel('System')
-                    ->withChildItems([
-                        'users' => (new MenuItem())
-                            ->withLabel('Users')
-                            ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {
-                                return $urlGenerator->generate('/user/default/index');
-                            })),
-                    ]),
                 'profile' => (new MenuItem())
                     ->withLabel('My profile')
                     ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {

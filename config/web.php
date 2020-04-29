@@ -19,6 +19,11 @@ use Yiisoft\Yii\Web\Session\Session;
 use Yiisoft\Yii\Web\Session\SessionInterface;
 use Yiisoft\Yii\Web\User\User as WebUser;
 
+$navbarSystem = $params['menu']['navbar']['items']['system'];
+$navbarSystemChilds = $navbarSystem->getChildItems();
+$navbarSystemChilds['users'] = $params['usersNavbarMenuItem'];
+$navbarSystem->setChildItems($navbarSystemChilds);
+
 return [
     SessionInterface::class => [
         '__class' => Session::class,
