@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Mailery\User\Controller;
 
 use Cycle\ORM\ORMInterface;
-use Cycle\ORM\Transaction;
 use Mailery\User\Controller;
 use Mailery\User\Entity\User;
 use Mailery\User\Form\UserForm;
@@ -25,6 +24,12 @@ use Yiisoft\Data\Reader\Sort;
 use Yiisoft\Http\Method;
 use Yiisoft\Router\UrlGeneratorInterface as UrlGenerator;
 
+use Mailery\Widget\Search\Form\SearchForm;
+use Mailery\User\Service\UserService;
+use Mailery\Widget\Search\Model\SearchByList;
+use Mailery\User\Search\DefaultSearchBy;
+use Mailery\Widget\Search\Data\Reader\Search;
+
 class DefaultController extends Controller
 {
     private const PAGINATION_INDEX = 10;
@@ -32,19 +37,28 @@ class DefaultController extends Controller
     /**
      * @param Request $request
      * @param ORMInterface $orm
+     * @param SearchForm $searchForm
      * @return Response
      */
-    public function index(Request $request, ORMInterface $orm): Response
+    public function index(Request $request, ORMInterface $orm, SearchForm $searchForm): Response
     {
+        $searchForm = $searchForm->withSearchByList(new SearchByList([
+            new DefaultSearchBy()
+        ]));
+
         $queryParams = $request->getQueryParams();
         $pageNum = (int) ($queryParams['page'] ?? 1);
 
-        $dataReader = $this->getUserRepository($orm)->getDataReader()->withSort((new Sort([]))->withOrderString('username'));
+        $dataReader = $this->getUserRepository($orm)
+            ->getDataReader()
+            ->withSearch((new Search())->withSearchPhrase($searchForm->getSearchPhrase())->withSearchBy($searchForm->getSearchBy()))
+            ->withSort((new Sort([]))->withOrderString('username'));
+
         $paginator = (new OffsetPaginator($dataReader))
             ->withPageSize(self::PAGINATION_INDEX)
             ->withCurrentPage($pageNum);
 
-        return $this->render('index', compact('paginator'));
+        return $this->render('index', compact('searchForm', 'paginator'));
     }
 
     /**
@@ -119,7 +133,7 @@ class DefaultController extends Controller
         if ($submitted) {
             $userForm->loadFromServerRequest($request);
 
-            if ($userForm->save()) {
+            if ($userForm->save() !== null) {
                 return $this->redirect($urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
             }
         }
@@ -130,19 +144,18 @@ class DefaultController extends Controller
     /**
      * @param Request $request
      * @param ORMInterface $orm
+     * @param UserService $userService
      * @param UrlGenerator $urlGenerator
      * @return Response
      */
-    public function delete(Request $request, ORMInterface $orm, UrlGenerator $urlGenerator): Response
+    public function delete(Request $request, ORMInterface $orm, UserService $userService, UrlGenerator $urlGenerator): Response
     {
         $userId = $request->getAttribute('id');
         if (empty($userId) || ($user = $this->getUserRepository($orm)->findByPK($userId)) === null) {
             return $this->getResponseFactory()->createResponse(404);
         }
 
-        $tr = new Transaction($orm);
-        $tr->delete($user);
-        $tr->run();
+        $userService->delete($user);
 
         return $this->redirect($urlGenerator->generate('/user/default/index'));
     }

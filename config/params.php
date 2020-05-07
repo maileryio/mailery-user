@@ -60,7 +60,8 @@ return [
                     ->withLabel('My profile')
                     ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {
                         return $urlGenerator->generate('/user/default/logout');
-                    })),
+                    }))
+                    ->withOrder(300),
             ],
         ],
     ],

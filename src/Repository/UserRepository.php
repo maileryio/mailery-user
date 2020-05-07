@@ -18,7 +18,7 @@ use Cycle\ORM\Select\Repository;
 use Mailery\User\Entity\User;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
-use Yiisoft\Yii\Cycle\DataReader\SelectDataReader;
+use Mailery\Widget\Search\Data\Reader\SelectDataReader;
 
 class UserRepository extends Repository implements IdentityRepositoryInterface
 {

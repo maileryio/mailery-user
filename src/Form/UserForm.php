@@ -21,6 +21,8 @@ use Mailery\User\Repository\UserRepository;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Yiisoft\Security\PasswordHasher;
+use Mailery\User\Service\UserService;
+use Mailery\User\ValueObject\UserValueObject;
 
 class UserForm extends Form
 {
@@ -35,11 +37,18 @@ class UserForm extends Form
     private ?User $user;
 
     /**
-     * {@inheritdoc}
+     * @var UserService
      */
-    public function __construct(ORMInterface $orm)
+    private UserService $userService;
+
+    /**
+     * @param UserService $userService
+     * @param ORMInterface $orm
+     */
+    public function __construct(UserService $userService, ORMInterface $orm)
     {
         $this->orm = $orm;
+        $this->userService = $userService;
         parent::__construct($this->inputs());
     }
 
@@ -71,19 +80,16 @@ class UserForm extends Form
         $username = $this['username']->getValue();
         $password = $this['password']->getValue();
 
+        $valueObject = UserValueObject::fromForm($this)
+            ->withEmail($email)
+            ->withUsername($username)
+            ->withPassword((new PasswordHasher)->hash($password));
+
         if (($user = $this->user) === null) {
-            $user = new User();
+            $user = $this->userService->create($valueObject);
+        } else {
+            $this->userService->update($user, $valueObject);
         }
-
-        $user
-            ->setEmail($email)
-            ->setUsername($username)
-            ->setPassword((new PasswordHasher)->hash($password))
-        ;
-
-        $tr = new Transaction($this->orm);
-        $tr->persist($user);
-        $tr->run();
 
         return $user;
     }
