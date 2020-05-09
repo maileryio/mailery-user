@@ -13,16 +13,15 @@ declare(strict_types=1);
 namespace Mailery\User\Form;
 
 use Cycle\ORM\ORMInterface;
-use Cycle\ORM\Transaction;
 use FormManager\Factory as F;
 use FormManager\Form;
 use Mailery\User\Entity\User;
 use Mailery\User\Repository\UserRepository;
+use Mailery\User\Service\UserService;
+use Mailery\User\ValueObject\UserValueObject;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Yiisoft\Security\PasswordHasher;
-use Mailery\User\Service\UserService;
-use Mailery\User\ValueObject\UserValueObject;
 
 class UserForm extends Form
 {

@@ -7,6 +7,7 @@ use Mailery\Widget\Dataview\Columns\DataColumn;
 use Mailery\Widget\Dataview\GridView;
 use Mailery\Widget\Dataview\GridView\LinkPager;
 use Mailery\Widget\Link\Link;
+use Mailery\Widget\Search\Widget\SearchWidget;
 use Yiisoft\Html\Html;
 
 /** @var Mailery\Web\View\WebView $this */
@@ -22,7 +23,7 @@ $this->setTitle('All users');
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
             <h1 class="h2">All users</h1>
             <div class="btn-toolbar float-right">
-                <?= $searchForm ?>
+                <?= SearchWidget::widget()->form($searchForm); ?>
                 <button class="btn btn-sm btn-secondary dropdown-toggle mb-2">
                     <?= Icon::widget()->name('settings'); ?>
                 </button>

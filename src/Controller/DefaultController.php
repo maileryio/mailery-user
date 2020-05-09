@@ -17,18 +17,18 @@ use Mailery\User\Controller;
 use Mailery\User\Entity\User;
 use Mailery\User\Form\UserForm;
 use Mailery\User\Repository\UserRepository;
+use Mailery\User\Search\DefaultSearchBy;
+use Mailery\User\Service\UserService;
 use Mailery\Widget\Dataview\Paginator\OffsetPaginator;
+use Mailery\Widget\Search\Data\Reader\Search;
+use Mailery\Widget\Search\Form\SearchForm;
+use Mailery\Widget\Search\Model\SearchByList;
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Yiisoft\Data\Reader\Sort;
 use Yiisoft\Http\Method;
 use Yiisoft\Router\UrlGeneratorInterface as UrlGenerator;
-
-use Mailery\Widget\Search\Form\SearchForm;
-use Mailery\User\Service\UserService;
-use Mailery\Widget\Search\Model\SearchByList;
-use Mailery\User\Search\DefaultSearchBy;
-use Mailery\Widget\Search\Data\Reader\Search;
 
 class DefaultController extends Controller
 {
@@ -43,7 +43,7 @@ class DefaultController extends Controller
     public function index(Request $request, ORMInterface $orm, SearchForm $searchForm): Response
     {
         $searchForm = $searchForm->withSearchByList(new SearchByList([
-            new DefaultSearchBy()
+            new DefaultSearchBy(),
         ]));
 
         $queryParams = $request->getQueryParams();

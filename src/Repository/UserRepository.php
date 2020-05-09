@@ -16,9 +16,9 @@ use Cycle\ORM\Select;
 use Cycle\ORM\Select\QueryBuilder;
 use Cycle\ORM\Select\Repository;
 use Mailery\User\Entity\User;
+use Mailery\Widget\Search\Data\Reader\SelectDataReader;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
-use Mailery\Widget\Search\Data\Reader\SelectDataReader;
 
 class UserRepository extends Repository implements IdentityRepositoryInterface
 {
