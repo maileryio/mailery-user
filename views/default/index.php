@@ -11,7 +11,7 @@ use Mailery\Widget\Search\Widget\SearchWidget;
 use Yiisoft\Html\Html;
 
 /** @var Mailery\Web\View\WebView $this */
-/** @var Mailery\User\Form\SearchForm $searchForm */
+/** @var Mailery\Widget\Search\Form\SearchForm $searchForm */
 /** @var Yiisoft\Aliases\Aliases $aliases */
 /** @var Yiisoft\Router\UrlGeneratorInterface $urlGenerator */
 /** @var Yiisoft\Data\Reader\DataReaderInterface $dataReader*/
