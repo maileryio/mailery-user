@@ -23,7 +23,6 @@ use Mailery\Widget\Dataview\Paginator\OffsetPaginator;
 use Mailery\Widget\Search\Data\Reader\Search;
 use Mailery\Widget\Search\Form\SearchForm;
 use Mailery\Widget\Search\Model\SearchByList;
-
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Yiisoft\Data\Reader\Sort;
