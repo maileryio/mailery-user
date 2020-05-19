@@ -21,6 +21,8 @@
         "cycle/orm": "^1.2",
         "form-manager/form-manager": "^6.0",
         "foxy/foxy": "^1.0",
+        "maileryio/mailery-activity-log": "dev-master",
+        "maileryio/mailery-common": "dev-master",
         "maileryio/mailery-web": "dev-master",
         "maileryio/widget-dataview": "dev-master",
         "maileryio/widget-form": "dev-master",

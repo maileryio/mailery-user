@@ -13,12 +13,13 @@ declare(strict_types=1);
 namespace Mailery\User\Entity;
 
 use Yiisoft\Auth\IdentityInterface;
+use Mailery\Common\Entity\RoutableEntityInterface;
 
 /**
  * @Cycle\Annotated\Annotation\Entity(
  *      table = "users",
  *      repository = "Mailery\User\Repository\UserRepository",
- *      mapper = "Yiisoft\Yii\Cycle\Mapper\TimestampedMapper"
+ *      mapper = "Mailery\User\Mapper\DefaultMapper"
  * )
  * @Cycle\Annotated\Annotation\Table(
  *      indexes = {
@@ -28,7 +29,7 @@ use Yiisoft\Auth\IdentityInterface;
  *      }
  * )
  */
-class User implements IdentityInterface
+class User implements IdentityInterface, RoutableEntityInterface
 {
     const STATUS_ACTIVE = 'active';
     const STATUS_DISABLED = 'disabled';
@@ -62,6 +63,14 @@ class User implements IdentityInterface
      * @Cycle\Annotated\Annotation\Column(type = "enum(active, disabled)", default = "active")
      */
     private $status = 'active';
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->getUsername();
+    }
 
     /**
      * @return string|null
@@ -156,5 +165,37 @@ class User implements IdentityInterface
         $this->status = $status;
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getEditRouteName(): ?string
+    {
+        return '/user/default/edit';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getEditRouteParams(): array
+    {
+        return ['id' => $this->getId()];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getViewRouteName(): ?string
+    {
+        return '/user/default/view';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getViewRouteParams(): array
+    {
+        return ['id' => $this->getId()];
     }
 }

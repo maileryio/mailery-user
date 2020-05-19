@@ -41,9 +41,7 @@ return [
         $session = $container->get(SessionInterface::class);
         $identityRepository = $container->get(IdentityRepositoryInterface::class);
         $eventDispatcher = $container->get(EventDispatcherInterface::class);
-        $webUser = new WebUser($identityRepository, $eventDispatcher);
-        $webUser->setSession($session);
 
-        return $webUser;
+        return new WebUser($identityRepository, $eventDispatcher, $session);
     },
 ];

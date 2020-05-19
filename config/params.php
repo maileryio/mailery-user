@@ -22,7 +22,8 @@ return [
         ->withLabel('Users')
         ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {
             return $urlGenerator->generate('/user/default/index');
-        })),
+        }))
+        ->withOrder(100),
 
     'cycle.common' => [
         'entityPaths' => [
