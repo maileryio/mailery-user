@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
 use Mailery\Icon\Icon;
+use Mailery\Activity\Log\Widget\ActivityLogLink;
+use Mailery\User\Module;
 use Mailery\User\Entity\User;
 use Mailery\Widget\Dataview\Columns\ActionColumn;
 use Mailery\Widget\Dataview\Columns\DataColumn;
@@ -24,9 +26,15 @@ $this->setTitle('All users');
             <h1 class="h2">All users</h1>
             <div class="btn-toolbar float-right">
                 <?= SearchWidget::widget()->form($searchForm); ?>
-                <button class="btn btn-sm btn-secondary dropdown-toggle mb-2">
-                    <?= Icon::widget()->name('settings'); ?>
-                </button>
+                <b-dropdown right size="sm" variant="secondary" class="mb-2">
+                    <template v-slot:button-content>
+                        <?= Icon::widget()->name('settings'); ?>
+                    </template>
+                    <?= ActivityLogLink::widget()
+                        ->tag('b-dropdown-item')
+                        ->label('Activity log')
+                        ->module(Module::NAME); ?>
+                </b-dropdown>
                 <a class="btn btn-sm btn-primary mx-sm-1 mb-2" href="<?= $urlGenerator->generate('/user/default/create'); ?>">
                     <?= Icon::widget()->name('plus')->options(['class' => 'mr-1']); ?>
                     Add new user

@@ -14,6 +14,8 @@ namespace Mailery\User\Entity;
 
 use Yiisoft\Auth\IdentityInterface;
 use Mailery\Common\Entity\RoutableEntityInterface;
+use Mailery\Activity\Log\Entity\LoggableEntityTrait;
+use Mailery\Activity\Log\Entity\LoggableEntityInterface;
 
 /**
  * @Cycle\Annotated\Annotation\Entity(
@@ -29,8 +31,10 @@ use Mailery\Common\Entity\RoutableEntityInterface;
  *      }
  * )
  */
-class User implements IdentityInterface, RoutableEntityInterface
+class User implements IdentityInterface, RoutableEntityInterface, LoggableEntityInterface
 {
+    use LoggableEntityTrait;
+
     const STATUS_ACTIVE = 'active';
     const STATUS_DISABLED = 'disabled';
 
