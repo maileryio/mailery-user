@@ -23,13 +23,6 @@ use Mailery\Activity\Log\Entity\LoggableEntityInterface;
  *      repository = "Mailery\User\Repository\UserRepository",
  *      mapper = "Mailery\User\Mapper\DefaultMapper"
  * )
- * @Cycle\Annotated\Annotation\Table(
- *      indexes = {
- *          @Cycle\Annotated\Annotation\Table\Index(columns = {"email"}, unique = true),
- *          @Cycle\Annotated\Annotation\Table\Index(columns = {"username"}, unique = true),
- *          @Cycle\Annotated\Annotation\Table\Index(columns = {"status"})
- *      }
- * )
  */
 class User implements IdentityInterface, RoutableEntityInterface, LoggableEntityInterface
 {

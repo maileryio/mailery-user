@@ -12,8 +12,7 @@ declare(strict_types=1);
 
 namespace Mailery\User\Controller;
 
-use Cycle\ORM\ORMInterface;
-use Mailery\User\Controller;
+use Mailery\Common\Web\Controller;
 use Mailery\User\Entity\User;
 use Mailery\User\Form\UserForm;
 use Mailery\User\Repository\UserRepository;
@@ -35,11 +34,10 @@ class DefaultController extends Controller
 
     /**
      * @param Request $request
-     * @param ORMInterface $orm
      * @param SearchForm $searchForm
      * @return Response
      */
-    public function index(Request $request, ORMInterface $orm, SearchForm $searchForm): Response
+    public function index(Request $request, SearchForm $searchForm): Response
     {
         $searchForm = $searchForm->withSearchByList(new SearchByList([
             new DefaultSearchBy(),
@@ -48,7 +46,7 @@ class DefaultController extends Controller
         $queryParams = $request->getQueryParams();
         $pageNum = (int) ($queryParams['page'] ?? 1);
 
-        $dataReader = $this->getUserRepository($orm)
+        $dataReader = $this->getUserRepository()
             ->getDataReader()
             ->withSearch((new Search())->withSearchPhrase($searchForm->getSearchPhrase())->withSearchBy($searchForm->getSearchBy()))
             ->withSort((new Sort([]))->withOrderString('username'));
@@ -62,13 +60,12 @@ class DefaultController extends Controller
 
     /**
      * @param Request $request
-     * @param ORMInterface $orm
      * @return Response
      */
-    public function view(Request $request, ORMInterface $orm): Response
+    public function view(Request $request): Response
     {
         $userId = $request->getAttribute('id');
-        if (empty($userId) || ($user = $this->getUserRepository($orm)->findByPK($userId)) === null) {
+        if (empty($userId) || ($user = $this->getUserRepository()->findByPK($userId)) === null) {
             return $this->getResponseFactory()->createResponse(404);
         }
 
@@ -106,15 +103,14 @@ class DefaultController extends Controller
 
     /**
      * @param Request $request
-     * @param ORMInterface $orm
      * @param UserForm $userForm
      * @param UrlGenerator $urlGenerator
      * @return Response
      */
-    public function edit(Request $request, ORMInterface $orm, UserForm $userForm, UrlGenerator $urlGenerator): Response
+    public function edit(Request $request, UserForm $userForm, UrlGenerator $urlGenerator): Response
     {
         $userId = $request->getAttribute('id');
-        if (empty($userId) || ($user = $this->getUserRepository($orm)->findByPK($userId)) === null) {
+        if (empty($userId) || ($user = $this->getUserRepository()->findByPK($userId)) === null) {
             return $this->getResponseFactory()->createResponse(404);
         }
 
@@ -142,15 +138,14 @@ class DefaultController extends Controller
 
     /**
      * @param Request $request
-     * @param ORMInterface $orm
      * @param UserService $userService
      * @param UrlGenerator $urlGenerator
      * @return Response
      */
-    public function delete(Request $request, ORMInterface $orm, UserService $userService, UrlGenerator $urlGenerator): Response
+    public function delete(Request $request, UserService $userService, UrlGenerator $urlGenerator): Response
     {
         $userId = $request->getAttribute('id');
-        if (empty($userId) || ($user = $this->getUserRepository($orm)->findByPK($userId)) === null) {
+        if (empty($userId) || ($user = $this->getUserRepository()->findByPK($userId)) === null) {
             return $this->getResponseFactory()->createResponse(404);
         }
 
@@ -160,11 +155,10 @@ class DefaultController extends Controller
     }
 
     /**
-     * @param ORMInterface $orm
      * @return UserRepository
      */
-    private function getUserRepository(ORMInterface $orm): UserRepository
+    private function getUserRepository(): UserRepository
     {
-        return $orm->getRepository(User::class);
+        return $this->getOrm()->getRepository(User::class);
     }
 }
