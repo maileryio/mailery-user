@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use Mailery\Activity\Log\Widget\ActivityLogLink;
 use Mailery\Icon\Icon;
 use Mailery\User\Entity\User;
 use Mailery\Widget\Dataview\DetailView;
@@ -29,6 +30,15 @@ $this->setTitle($user->getUsername());
                     <?= Icon::widget()->name('pencil')->options(['class' => 'mr-1']); ?>
                     Update
                 </a>
+                <b-dropdown right size="sm" variant="secondary" class="mb-2">
+                    <template v-slot:button-content>
+                        <?= Icon::widget()->name('settings'); ?>
+                    </template>
+                    <?= ActivityLogLink::widget()
+                        ->tag('b-dropdown-item')
+                        ->label('Activity log')
+                        ->entity($user); ?>
+                </b-dropdown>
                 <div class="btn-toolbar float-right">
                     <a class="btn btn-sm btn-outline-secondary mx-sm-1 mb-2" href="<?= $urlGenerator->generate('/user/default/index'); ?>">
                         Back

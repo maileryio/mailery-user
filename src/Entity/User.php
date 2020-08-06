@@ -195,4 +195,14 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     {
         return ['id' => $this->getId()];
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMaskedFields(): array
+    {
+        return [
+            'password',
+        ];
+    }
 }
