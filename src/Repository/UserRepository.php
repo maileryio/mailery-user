@@ -41,8 +41,7 @@ class UserRepository extends Repository implements IdentityRepositoryInterface
     }
 
     /**
-     * @param string $id
-     * @return IdentityInterface|null
+     * @inheritdoc
      */
     public function findIdentity(string $id): ?IdentityInterface
     {
@@ -53,11 +52,9 @@ class UserRepository extends Repository implements IdentityRepositoryInterface
     }
 
     /**
-     * @param string $token
-     * @param string $type
-     * @return IdentityInterface|null
+     * @inheritdoc
      */
-    public function findIdentityByToken(string $token, string $type): ?IdentityInterface
+    public function findIdentityByToken(string $token, string $type = null): ?IdentityInterface
     {
         throw new \RuntimeException('"findIdentityByAccessToken" is not implemented with params: token[' . $token . '] and type[' . $type . '].');
     }
