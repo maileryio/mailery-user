@@ -114,7 +114,7 @@ $this->setTitle('All users');
         ?>
     </div>
 </div><?php
-if ($paginator->getTotalCount() > 0) {
+if ($paginator->getTotalItems() > 0) {
             ?><div class="mb-4"></div>
     <div class="row">
         <div class="col-6">

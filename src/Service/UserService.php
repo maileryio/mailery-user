@@ -12,74 +12,57 @@ declare(strict_types=1);
 
 namespace Mailery\User\Service;
 
-use Cycle\ORM\ORMInterface;
-use Cycle\ORM\Transaction;
-use Mailery\User\Entity\User;
-use Mailery\User\ValueObject\UserValueObject;
+use Mailery\User\Search\DefaultSearchBy;
+use Mailery\Widget\Search\Form\SearchForm;
+use Mailery\Widget\Search\Model\SearchByList;
+use Yiisoft\Data\Paginator\PaginatorInterface;
+use Mailery\User\Repository\UserRepository;
+use Yiisoft\Data\Paginator\OffsetPaginator;
+use Yiisoft\Data\Reader\Sort;
 
 class UserService
 {
     /**
-     * @var ORMInterface
+     * @var UserRepository
      */
-    private ORMInterface $orm;
+    private UserRepository $userRepo;
 
     /**
-     * @param ORMInterface $orm
+     * @param UserRepository $userRepo
      */
-    public function __construct(ORMInterface $orm)
+    public function __construct(UserRepository $userRepo)
     {
-        $this->orm = $orm;
+        $this->userRepo = $userRepo;
     }
 
     /**
-     * @param UserValueObject $valueObject
-     * @return User
+     * @return SearchForm
      */
-    public function create(UserValueObject $valueObject): User
+    public function getSearchForm(): SearchForm
     {
-        $user = (new User())
-            ->setEmail($valueObject->getEmail())
-            ->setUsername($valueObject->getUsername())
-        ;
-
-        $tr = new Transaction($this->orm);
-        $tr->persist($user);
-        $tr->run();
-
-        return $user;
+        return (new SearchForm())
+            ->withSearchByList(new SearchByList([
+                new DefaultSearchBy(),
+            ]));
     }
 
     /**
-     * @param User $user
-     * @param UserValueObject $valueObject
-     * @return User
+     * @param SearchForm $searchForm
+     * @return PaginatorInterface
      */
-    public function update(User $user, UserValueObject $valueObject): User
+    public function getFullPaginator(SearchForm $searchForm): PaginatorInterface
     {
-        $user = $user
-            ->setEmail($valueObject->getEmail())
-            ->setUsername($valueObject->getUsername())
-            ->setPassword($valueObject->getPassword())
-        ;
+        $dataReader = $this->userRepo
+            ->getDataReader();
 
-        $tr = new Transaction($this->orm);
-        $tr->persist($user);
-        $tr->run();
+        if (($searchBy = $searchForm->getSearchBy()) !== null) {
+            $dataReader = $dataReader->withFilter($searchBy);
+        }
 
-        return $user;
-    }
-
-    /**
-     * @param User $user
-     * @return bool
-     */
-    public function delete(User $user): bool
-    {
-        $tr = new Transaction($this->orm);
-        $tr->delete($user);
-        $tr->run();
-
-        return true;
+        return new OffsetPaginator(
+            $dataReader->withSort(
+                (new Sort([]))->withOrderString('username')
+            )
+        );
     }
 }

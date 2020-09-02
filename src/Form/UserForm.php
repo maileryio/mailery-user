@@ -17,7 +17,7 @@ use FormManager\Factory as F;
 use FormManager\Form;
 use Mailery\User\Entity\User;
 use Mailery\User\Repository\UserRepository;
-use Mailery\User\Service\UserService;
+use Mailery\User\Service\UserCrudService;
 use Mailery\User\ValueObject\UserValueObject;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -36,18 +36,18 @@ class UserForm extends Form
     private ?User $user;
 
     /**
-     * @var UserService
+     * @var UserCrudService
      */
-    private UserService $userService;
+    private UserCrudService $userCrudService;
 
     /**
-     * @param UserService $userService
+     * @param UserCrudService $userCrudService
      * @param ORMInterface $orm
      */
-    public function __construct(UserService $userService, ORMInterface $orm)
+    public function __construct(UserCrudService $userCrudService, ORMInterface $orm)
     {
         $this->orm = $orm;
-        $this->userService = $userService;
+        $this->userCrudService = $userCrudService;
         parent::__construct($this->inputs());
     }
 
@@ -85,9 +85,9 @@ class UserForm extends Form
             ->withPassword((new PasswordHasher)->hash($password));
 
         if (($user = $this->user) === null) {
-            $user = $this->userService->create($valueObject);
+            $user = $this->userCrudService->create($valueObject);
         } else {
-            $this->userService->update($user, $valueObject);
+            $this->userCrudService->update($user, $valueObject);
         }
 
         return $user;

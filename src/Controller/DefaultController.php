@@ -16,15 +16,10 @@ use Mailery\Common\Web\Controller;
 use Mailery\User\Entity\User;
 use Mailery\User\Form\UserForm;
 use Mailery\User\Repository\UserRepository;
-use Mailery\User\Search\DefaultSearchBy;
 use Mailery\User\Service\UserService;
-use Mailery\Widget\Dataview\Paginator\OffsetPaginator;
-use Mailery\Widget\Search\Data\Reader\Search;
-use Mailery\Widget\Search\Form\SearchForm;
-use Mailery\Widget\Search\Model\SearchByList;
+use Mailery\User\Service\UserCrudService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Yiisoft\Data\Reader\Sort;
 use Yiisoft\Http\Method;
 use Yiisoft\Router\UrlGeneratorInterface as UrlGenerator;
 
@@ -34,24 +29,21 @@ class DefaultController extends Controller
 
     /**
      * @param Request $request
-     * @param SearchForm $searchForm
+     * @param UserService $userService
      * @return Response
      */
-    public function index(Request $request, SearchForm $searchForm): Response
+    public function index(Request $request, UserService $userService): Response
     {
-        $searchForm = $searchForm->withSearchByList(new SearchByList([
-            new DefaultSearchBy(),
-        ]));
-
         $queryParams = $request->getQueryParams();
         $pageNum = (int) ($queryParams['page'] ?? 1);
+        $searchBy = $queryParams['searchBy'] ?? null;
+        $searchPhrase = $queryParams['search'] ?? null;
 
-        $dataReader = $this->getUserRepository()
-            ->getDataReader()
-            ->withSearch((new Search())->withSearchPhrase($searchForm->getSearchPhrase())->withSearchBy($searchForm->getSearchBy()))
-            ->withSort((new Sort([]))->withOrderString('username'));
+        $searchForm = $userService->getSearchForm()
+            ->withSearchBy($searchBy)
+            ->withSearchPhrase($searchPhrase);
 
-        $paginator = (new OffsetPaginator($dataReader))
+        $paginator = $userService->getFullPaginator($searchForm)
             ->withPageSize(self::PAGINATION_INDEX)
             ->withCurrentPage($pageNum);
 
@@ -138,18 +130,18 @@ class DefaultController extends Controller
 
     /**
      * @param Request $request
-     * @param UserService $userService
+     * @param UserCrudService $userCrudService
      * @param UrlGenerator $urlGenerator
      * @return Response
      */
-    public function delete(Request $request, UserService $userService, UrlGenerator $urlGenerator): Response
+    public function delete(Request $request, UserCrudService $userCrudService, UrlGenerator $urlGenerator): Response
     {
         $userId = $request->getAttribute('id');
         if (empty($userId) || ($user = $this->getUserRepository()->findByPK($userId)) === null) {
             return $this->getResponseFactory()->createResponse(404);
         }
 
-        $userService->delete($user);
+        $userCrudService->delete($user);
 
         return $this->redirect($urlGenerator->generate('/user/default/index'));
     }
