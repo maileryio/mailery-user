@@ -19,20 +19,55 @@ use Yiisoft\Data\Paginator\PaginatorInterface;
 use Mailery\User\Repository\UserRepository;
 use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Reader\Sort;
+use Yiisoft\Yii\Web\User\User as WebUser;
+use Yiisoft\Auth\IdentityInterface as User;
+use Yiisoft\Data\Reader\Filter\FilterInterface;
 
 class UserService
 {
+    /**
+     * @var User
+     */
+    private User $user;
+
+    /**
+     * WebUser $webUser
+     */
+    private WebUser $webUser;
+
     /**
      * @var UserRepository
      */
     private UserRepository $userRepo;
 
     /**
+     * @param WebUser $webUser
      * @param UserRepository $userRepo
      */
-    public function __construct(UserRepository $userRepo)
+    public function __construct(WebUser $webUser, UserRepository $userRepo)
     {
+        $this->webUser = $webUser;
         $this->userRepo = $userRepo;
+    }
+
+    /**
+     * @return User
+     */
+    public function getCurrentUser(): User
+    {
+        if (($user = $this->webUser->getIdentity()) !== null) {
+            $this->user = $user;
+        }
+
+        /* @TODO: temporary hack, move to settings module */
+        if (empty($this->user) || !$this->user->getId()) {
+            $this->user = $this->userRepo->findOne();
+        }
+
+        if (!$this->user instanceof User) {
+            throw new \RuntimeException('Invalid current user detection');
+        }
+        return $this->user;
     }
 
     /**
@@ -47,16 +82,16 @@ class UserService
     }
 
     /**
-     * @param SearchForm $searchForm
+     * @param FilterInterface|null $filter
      * @return PaginatorInterface
      */
-    public function getFullPaginator(SearchForm $searchForm): PaginatorInterface
+    public function getFullPaginator(FilterInterface $filter = null): PaginatorInterface
     {
         $dataReader = $this->userRepo
             ->getDataReader();
 
-        if (($searchBy = $searchForm->getSearchBy()) !== null) {
-            $dataReader = $dataReader->withFilter($searchBy);
+        if ($filter !== null) {
+            $dataReader = $dataReader->withFilter($filter);
         }
 
         return new OffsetPaginator(

@@ -12,42 +12,83 @@ declare(strict_types=1);
 
 namespace Mailery\User\Controller;
 
-use Mailery\Common\Web\Controller;
-use Mailery\User\Entity\User;
 use Mailery\User\Form\UserForm;
-use Mailery\User\Repository\UserRepository;
 use Mailery\User\Service\UserService;
 use Mailery\User\Service\UserCrudService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Yiisoft\Http\Method;
 use Yiisoft\Router\UrlGeneratorInterface as UrlGenerator;
+use Mailery\Web\ViewRenderer;
+use Mailery\User\Repository\UserRepository;
+use Psr\Http\Message\ResponseFactoryInterface as ResponseFactory;
 
-class DefaultController extends Controller
+class DefaultController
 {
     private const PAGINATION_INDEX = 10;
+
+    /**
+     * @var ViewRenderer
+     */
+    private ViewRenderer $viewRenderer;
+
+    /**
+     * @var ResponseFactory
+     */
+    private ResponseFactory $responseFactory;
+
+    /**
+     * @var UserRepository
+     */
+    private UserRepository $userRepo;
+
+    /**
+     * @var UserService
+     */
+    private UserService $userService;
+
+    /**
+     * @param ViewRenderer $viewRenderer
+     * @param ResponseFactory $responseFactory
+     * @param UserRepository $userRepo
+     * @param UserService $userService
+     */
+    public function __construct(
+        ViewRenderer $viewRenderer,
+        ResponseFactory $responseFactory,
+        UserRepository $userRepo,
+        UserService $userService
+    ) {
+        $this->viewRenderer = $viewRenderer
+            ->withController($this)
+            ->withCsrf();
+
+        $this->responseFactory = $responseFactory;
+        $this->userRepo = $userRepo;
+        $this->userService = $userService;
+    }
 
     /**
      * @param Request $request
      * @param UserService $userService
      * @return Response
      */
-    public function index(Request $request, UserService $userService): Response
+    public function index(Request $request): Response
     {
         $queryParams = $request->getQueryParams();
         $pageNum = (int) ($queryParams['page'] ?? 1);
         $searchBy = $queryParams['searchBy'] ?? null;
         $searchPhrase = $queryParams['search'] ?? null;
 
-        $searchForm = $userService->getSearchForm()
+        $searchForm = $this->userService->getSearchForm()
             ->withSearchBy($searchBy)
             ->withSearchPhrase($searchPhrase);
 
-        $paginator = $userService->getFullPaginator($searchForm)
+        $paginator = $this->userService->getFullPaginator($searchForm->getSearchBy())
             ->withPageSize(self::PAGINATION_INDEX)
             ->withCurrentPage($pageNum);
 
-        return $this->render('index', compact('searchForm', 'paginator'));
+        return $this->viewRenderer->render('index', compact('searchForm', 'paginator'));
     }
 
     /**
@@ -57,11 +98,11 @@ class DefaultController extends Controller
     public function view(Request $request): Response
     {
         $userId = $request->getAttribute('id');
-        if (empty($userId) || ($user = $this->getUserRepository()->findByPK($userId)) === null) {
-            return $this->getResponseFactory()->createResponse(404);
+        if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
+            return $this->responseFactory->createResponse(404);
         }
 
-        return $this->render('view', compact('user'));
+        return $this->viewRenderer->render('view', compact('user'));
     }
 
     /**
@@ -86,11 +127,13 @@ class DefaultController extends Controller
             $userForm->loadFromServerRequest($request);
 
             if (($user = $userForm->save()) !== null) {
-                return $this->redirect($urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
+                return $this->responseFactory
+                    ->createResponse(302)
+                    ->withHeader('Location', $urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
             }
         }
 
-        return $this->render('create', compact('userForm', 'submitted'));
+        return $this->viewRenderer->render('create', compact('userForm', 'submitted'));
     }
 
     /**
@@ -102,17 +145,17 @@ class DefaultController extends Controller
     public function edit(Request $request, UserForm $userForm, UrlGenerator $urlGenerator): Response
     {
         $userId = $request->getAttribute('id');
-        if (empty($userId) || ($user = $this->getUserRepository()->findByPK($userId)) === null) {
-            return $this->getResponseFactory()->createResponse(404);
+        if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
+            return $this->responseFactory->createResponse(404);
         }
 
-        $userForm
-            ->withUser($user)
+        $userForm = $userForm
             ->setAttributes([
                 'action' => $request->getUri()->getPath(),
                 'method' => 'post',
                 'enctype' => 'multipart/form-data',
             ])
+            ->withUser($user)
         ;
 
         $submitted = $request->getMethod() === Method::POST;
@@ -121,11 +164,13 @@ class DefaultController extends Controller
             $userForm->loadFromServerRequest($request);
 
             if ($userForm->save() !== null) {
-                return $this->redirect($urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
+                return $this->responseFactory
+                    ->createResponse(302)
+                    ->withHeader('Location', $urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
             }
         }
 
-        return $this->render('edit', compact('user', 'userForm', 'submitted'));
+        return $this->viewRenderer->render('edit', compact('user', 'userForm', 'submitted'));
     }
 
     /**
@@ -137,20 +182,14 @@ class DefaultController extends Controller
     public function delete(Request $request, UserCrudService $userCrudService, UrlGenerator $urlGenerator): Response
     {
         $userId = $request->getAttribute('id');
-        if (empty($userId) || ($user = $this->getUserRepository()->findByPK($userId)) === null) {
-            return $this->getResponseFactory()->createResponse(404);
+        if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
+            return $this->responseFactory->createResponse(404);
         }
 
         $userCrudService->delete($user);
 
-        return $this->redirect($urlGenerator->generate('/user/default/index'));
-    }
-
-    /**
-     * @return UserRepository
-     */
-    private function getUserRepository(): UserRepository
-    {
-        return $this->getOrm()->getRepository(User::class);
+        return $this->responseFactory
+            ->createResponse(302)
+            ->withHeader('Location', $urlGenerator->generate('/user/default/index'));
     }
 }

@@ -9,7 +9,9 @@ use Mailery\Widget\Link\Link;
 /** @var Mailery\Web\View\WebView $this */
 /** @var Psr\Http\Message\ServerRequestInterface $request */
 /** @var \Mailery\User\Entity\User $user */
+/** @var string $csrf */
 /** @var bool $submitted */
+
 $this->setTitle($user->getUsername());
 
 ?><div class="row">

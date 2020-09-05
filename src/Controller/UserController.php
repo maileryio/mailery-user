@@ -12,9 +12,7 @@ declare(strict_types=1);
 
 namespace Mailery\User\Controller;
 
-use Mailery\Common\Web\Controller;
-
-class UserController extends Controller
+class UserController
 {
     public function logout()
     {

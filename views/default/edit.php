@@ -7,7 +7,9 @@ use Mailery\Widget\Form\FormRenderer;
 /** @var Psr\Http\Message\ServerRequestInterface $request */
 /** @var Mailery\User\Entity\User $user */
 /** @var Mailery\User\Form\UserForm $userForm */
+/** @var string $csrf */
 /** @var bool $submitted */
+
 $this->setTitle('Edit User #' . $user->getId());
 
 ?><div class="row">
@@ -29,6 +31,6 @@ $this->setTitle('Edit User #' . $user->getId());
 <div class="mb-2"></div>
 <div class="row">
     <div class="col-6">
-        <?= (new FormRenderer($userForm))($submitted); ?>
+        <?= (new FormRenderer($userForm->withCsrf($csrf)))($submitted); ?>
     </div>
 </div>

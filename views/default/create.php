@@ -5,7 +5,9 @@ use Mailery\Widget\Form\FormRenderer;
 /** @var Mailery\Web\View\WebView $this */
 /** @var Psr\Http\Message\ServerRequestInterface $request */
 /** @var FormManager\Form $userForm */
+/** @var string $csrf */
 /** @var bool $submitted */
+
 $this->setTitle('New User');
 
 ?><div class="row">
@@ -23,6 +25,6 @@ $this->setTitle('New User');
 <div class="mb-2"></div>
 <div class="row">
     <div class="col-6">
-        <?= (new FormRenderer($userForm))($submitted); ?>
+        <?= (new FormRenderer($userForm->withCsrf($csrf)))($submitted); ?>
     </div>
 </div>
