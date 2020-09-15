@@ -96,7 +96,7 @@ class UserService
 
         return new OffsetPaginator(
             $dataReader->withSort(
-                (new Sort([]))->withOrderString('username')
+                (new Sort([]))->withOrder(['id' => 'DESC'])
             )
         );
     }
