@@ -15,8 +15,8 @@ use Mailery\User\Entity\User as UserEntity;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
-use Yiisoft\Yii\Web\Session\Session;
-use Yiisoft\Yii\Web\Session\SessionInterface;
+use Yiisoft\Session\Session;
+use Yiisoft\Session\SessionInterface;
 use Yiisoft\Yii\Web\User\User as WebUser;
 
 $navbarSystem = $params['menu']['navbar']['items']['system'];
