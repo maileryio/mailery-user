@@ -29,6 +29,7 @@
         "maileryio/widget-link": "dev-master",
         "maileryio/widget-search": "dev-master",
         "yiisoft/router": "^3.0@dev",
+        "yiisoft/session": "^3.0@dev",
         "yiisoft/yii-cycle": "^3.0@dev"
     },
     "require-dev": {
