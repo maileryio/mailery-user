@@ -6,7 +6,7 @@ use Mailery\User\Entity\User;
 use Mailery\Widget\Dataview\DetailView;
 use Mailery\Widget\Link\Link;
 
-/** @var Mailery\Web\View\WebView $this */
+/** @var Yiisoft\Yii\WebView $this */
 /** @var Psr\Http\Message\ServerRequestInterface $request */
 /** @var \Mailery\User\Entity\User $user */
 /** @var string $csrf */
