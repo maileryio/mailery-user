@@ -16,20 +16,21 @@ use Cycle\ORM\Select;
 use Cycle\ORM\Select\QueryBuilder;
 use Cycle\ORM\Select\Repository;
 use Mailery\User\Entity\User;
-use Yiisoft\Yii\Cycle\DataReader\SelectDataReader;
+use Yiisoft\Yii\Cycle\Data\Reader\EntityReader;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
+use Yiisoft\Data\Reader\DataReaderInterface;
 
 class UserRepository extends Repository implements IdentityRepositoryInterface
 {
     /**
      * @param array $scope
      * @param array $orderBy
-     * @return SelectDataReader
+     * @return DataReaderInterface
      */
-    public function getDataReader(array $scope = [], array $orderBy = []): SelectDataReader
+    public function getDataReader(array $scope = [], array $orderBy = []): DataReaderInterface
     {
-        return new SelectDataReader($this->select()->where($scope)->orderBy($orderBy));
+        return new EntityReader($this->select()->where($scope)->orderBy($orderBy));
     }
 
     /**
