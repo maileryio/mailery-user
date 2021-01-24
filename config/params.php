@@ -11,11 +11,7 @@ declare(strict_types=1);
  */
 
 use Mailery\Menu\MenuItem;
-use Mailery\User\Controller\DefaultController;
-use Mailery\User\Controller\UserController;
 use Opis\Closure\SerializableClosure;
-use Yiisoft\Router\Group;
-use Yiisoft\Router\Route;
 use Yiisoft\Router\UrlGeneratorInterface;
 
 return [
@@ -29,12 +25,6 @@ return [
     'yiisoft/yii-cycle' => [
         'annotated-entity-paths' => [
             '@vendor/maileryio/mailery-user/src/Entity',
-        ],
-    ],
-
-    'session' => [
-        'options' => [
-            'cookie_secure' => 0,
         ],
     ],
 

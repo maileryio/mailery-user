@@ -31,6 +31,7 @@
         "yiisoft/auth": "^2.0",
         "yiisoft/router": "^3.0@dev",
         "yiisoft/session": "^1.0",
+        "yiisoft/user": "^3.0@dev",
         "yiisoft/yii-cycle": "^3.0@dev"
     },
     "require-dev": {

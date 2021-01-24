@@ -19,8 +19,7 @@ use Yiisoft\Data\Paginator\PaginatorInterface;
 use Mailery\User\Repository\UserRepository;
 use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Reader\Sort;
-use Yiisoft\Yii\Web\User\User as WebUser;
-use Yiisoft\Auth\IdentityInterface as User;
+use Yiisoft\User\User;
 use Yiisoft\Data\Reader\Filter\FilterInterface;
 
 class UserService
@@ -31,43 +30,26 @@ class UserService
     private User $user;
 
     /**
-     * WebUser $webUser
-     */
-    private WebUser $webUser;
-
-    /**
      * @var UserRepository
      */
     private UserRepository $userRepo;
 
     /**
-     * @param WebUser $webUser
+     * @param User $user
      * @param UserRepository $userRepo
      */
-    public function __construct(WebUser $webUser, UserRepository $userRepo)
+    public function __construct(User $user, UserRepository $userRepo)
     {
-        $this->webUser = $webUser;
+        $this->user = $user;
         $this->userRepo = $userRepo;
     }
 
     /**
-     * @return User
+     * @return User|null
      */
-    public function getCurrentUser(): User
+    public function getCurrentUser(): ?User
     {
-        if (($user = $this->webUser->getIdentity()) !== null) {
-            $this->user = $user;
-        }
-
-        /* @TODO: temporary hack, move to settings module */
-        if (empty($this->user) || !$this->user->getId()) {
-            $this->user = $this->userRepo->findOne();
-        }
-
-        if (!$this->user instanceof User) {
-            throw new \RuntimeException('Invalid current user detection');
-        }
-        return $this->user;
+        return $this->user->getIdentity();
     }
 
     /**
