@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Mailery\User\Form;
 
-use Cycle\ORM\ORMInterface;
 use FormManager\Factory as F;
 use FormManager\Form;
 use Mailery\User\Entity\User;
@@ -26,14 +25,14 @@ use Yiisoft\Security\PasswordHasher;
 class UserForm extends Form
 {
     /**
-     * @var ORMInterface
-     */
-    private ORMInterface $orm;
-
-    /**
      * @var User|null
      */
-    private ?User $user;
+    private ?User $user = null;
+
+    /**
+     * @var UserRepository
+     */
+    private UserRepository $userRepo;
 
     /**
      * @var UserCrudService
@@ -41,12 +40,14 @@ class UserForm extends Form
     private UserCrudService $userCrudService;
 
     /**
+     * @param UserRepository $userRepo
      * @param UserCrudService $userCrudService
-     * @param ORMInterface $orm
      */
-    public function __construct(UserCrudService $userCrudService, ORMInterface $orm)
-    {
-        $this->orm = $orm;
+    public function __construct(
+        UserRepository $userRepo,
+        UserCrudService $userCrudService
+    ) {
+        $this->userRepo = $userRepo;
         $this->userCrudService = $userCrudService;
         parent::__construct($this->inputs());
     }
@@ -109,17 +110,13 @@ class UserForm extends Form
      */
     private function inputs(): array
     {
-        $userRepo = $this->getUserRepository($this->orm);
-
-        $statusOptions = $this->getStatusOptions();
-
         $emailConstraint = new Constraints\Callback([
-            'callback' => function ($value, ExecutionContextInterface $context) use ($userRepo) {
+            'callback' => function ($value, ExecutionContextInterface $context) {
                 if (empty($value)) {
                     return;
                 }
 
-                $user = $userRepo->findByEmail($value, $this->user);
+                $user = $this->userRepo->findByEmail($value, $this->user);
                 if ($user !== null) {
                     $context->buildViolation('This email already exists.')
                         ->atPath('email')
@@ -129,12 +126,12 @@ class UserForm extends Form
         ]);
 
         $usernameConstraint = new Constraints\Callback([
-            'callback' => function ($value, ExecutionContextInterface $context) use ($userRepo) {
+            'callback' => function ($value, ExecutionContextInterface $context) {
                 if (empty($value)) {
                     return;
                 }
 
-                $user = $userRepo->findByUsername($value, $this->user);
+                $user = $this->userRepo->findByUsername($value, $this->user);
                 if ($user !== null) {
                     $context->buildViolation('This username already exists.')
                         ->atPath('username')
@@ -158,10 +155,10 @@ class UserForm extends Form
         ]);
 
         return [
-            'status' => F::select('Status', $statusOptions)
+            'status' => F::select('Status', $this->getStatusOptions())
                 ->addConstraint(new Constraints\NotBlank())
                 ->addConstraint(new Constraints\Choice([
-                    'choices' => array_keys($statusOptions),
+                    'choices' => array_keys($this->getStatusOptions()),
                 ])),
             'email' => F::text('Email')
                 ->addConstraint(new Constraints\NotBlank())
@@ -198,14 +195,5 @@ class UserForm extends Form
             User::STATUS_ACTIVE => 'Active',
             User::STATUS_DISABLED => 'Disabled',
         ];
-    }
-
-    /**
-     * @param ORMInterface $orm
-     * @return UserRepository
-     */
-    private function getUserRepository(ORMInterface $orm): UserRepository
-    {
-        return $orm->getRepository(User::class);
     }
 }
