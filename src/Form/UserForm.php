@@ -154,11 +154,13 @@ class UserForm extends Form
             },
         ]);
 
+        $statusOptions = $this->getStatusOptions();
+
         return [
-            'status' => F::select('Status', $this->getStatusOptions())
+            'status' => F::select('Status', $statusOptions)
                 ->addConstraint(new Constraints\NotBlank())
                 ->addConstraint(new Constraints\Choice([
-                    'choices' => array_keys($this->getStatusOptions()),
+                    'choices' => array_keys($statusOptions),
                 ])),
             'email' => F::text('Email')
                 ->addConstraint(new Constraints\NotBlank())
