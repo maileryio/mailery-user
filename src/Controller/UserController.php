@@ -14,6 +14,11 @@ namespace Mailery\User\Controller;
 
 class UserController
 {
+    public function login()
+    {
+        var_dump(111);exit;
+    }
+
     public function logout()
     {
     }

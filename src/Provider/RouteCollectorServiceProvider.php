@@ -31,7 +31,10 @@ final class RouteCollectorServiceProvider extends ServiceProvider
                         ->name('/user/default/edit'),
                     Route::delete('/default/delete/{id:\d+}', [DefaultController::class, 'delete'])
                         ->name('/user/default/delete'),
-                    Route::post('/default/logout', [UserController::class, 'logout'])
+
+                    Route::post('/login', [UserController::class, 'login'])
+                        ->name('/user/default/login'),
+                    Route::post('/logout', [UserController::class, 'logout'])
                         ->name('/user/default/logout'),
                 ]
             )

@@ -12,7 +12,9 @@ declare(strict_types=1);
 
 use Mailery\Menu\MenuItem;
 use Opis\Closure\SerializableClosure;
+use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\Router\UrlGeneratorInterface;
+use Yiisoft\Injector\Injector;
 
 return [
     'usersNavbarMenuItem' => (new MenuItem())
@@ -21,6 +23,10 @@ return [
             return $urlGenerator->generate('/user/default/index');
         }))
         ->withOrder(100),
+
+    'yiisoft/user' => [
+        'authUrl' => '/user/login',
+    ],
 
     'yiisoft/yii-cycle' => [
         'annotated-entity-paths' => [
@@ -38,6 +44,17 @@ return [
                     }))
                     ->withOrder(300),
             ],
+        ],
+    ],
+
+    'dispatcher' => [
+        'middlewares' => [
+            function (Injector $injector) {
+                return $injector->make(Authentication::class)
+                    ->withOptionalPatterns([
+                        '/user/login'
+                    ]);
+            }
         ],
     ],
 ];
