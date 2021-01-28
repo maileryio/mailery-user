@@ -16,6 +16,7 @@ use Yiisoft\Auth\IdentityInterface;
 use Mailery\Common\Entity\RoutableEntityInterface;
 use Mailery\Activity\Log\Entity\LoggableEntityTrait;
 use Mailery\Activity\Log\Entity\LoggableEntityInterface;
+use Yiisoft\Security\PasswordHasher;
 
 /**
  * @Cycle\Annotated\Annotation\Entity(
@@ -140,9 +141,18 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
      */
     public function setPassword(string $password): self
     {
-        $this->password = $password;
+        $this->password = (new PasswordHasher())->hash($password);
 
         return $this;
+    }
+
+    /**
+     * @param string $password
+     * @return bool
+     */
+    public function validatePassword(string $password): bool
+    {
+        return (new PasswordHasher())->validate($password, $this->passwordHash);
     }
 
     /**

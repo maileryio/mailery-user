@@ -40,7 +40,7 @@ return [
                 'profile' => (new MenuItem())
                     ->withLabel('My profile')
                     ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {
-                        return $urlGenerator->generate('/user/default/logout');
+                        return $urlGenerator->generate('/user/auth/logout');
                     }))
                     ->withOrder(300),
             ],
@@ -49,10 +49,10 @@ return [
 
     'dispatcher' => [
         'middlewares' => [
-            function (Injector $injector) {
+            function (UrlGeneratorInterface $urlGenerator, Injector $injector) {
                 return $injector->make(Authentication::class)
                     ->withOptionalPatterns([
-                        '/user/login'
+                        $urlGenerator->generate('/user/auth/login'),
                     ]);
             }
         ],

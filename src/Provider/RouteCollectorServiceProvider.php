@@ -8,7 +8,7 @@ use Yiisoft\Router\RouteCollectorInterface;
 use Yiisoft\Router\Group;
 use Yiisoft\Router\Route;
 use Mailery\User\Controller\DefaultController;
-use Mailery\User\Controller\UserController;
+use Mailery\User\Controller\AuthController;
 
 final class RouteCollectorServiceProvider extends ServiceProvider
 {
@@ -32,10 +32,10 @@ final class RouteCollectorServiceProvider extends ServiceProvider
                     Route::delete('/default/delete/{id:\d+}', [DefaultController::class, 'delete'])
                         ->name('/user/default/delete'),
 
-                    Route::post('/login', [UserController::class, 'login'])
-                        ->name('/user/default/login'),
-                    Route::post('/logout', [UserController::class, 'logout'])
-                        ->name('/user/default/logout'),
+                    Route::methods(['GET', 'POST'], '/login', [AuthController::class, 'login'])
+                        ->name('/user/auth/login'),
+                    Route::post('/logout', [AuthController::class, 'logout'])
+                        ->name('/user/auth/logout'),
                 ]
             )
         );
