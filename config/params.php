@@ -15,6 +15,8 @@ use Opis\Closure\SerializableClosure;
 use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Injector\Injector;
+use Mailery\User\Console\CreateCommand;
+use Mailery\User\Console\AssignRoleCommand;
 
 return [
     'usersNavbarMenuItem' => (new MenuItem())
@@ -26,6 +28,13 @@ return [
 
     'yiisoft/user' => [
         'authUrl' => '/user/login',
+    ],
+
+    'yiisoft/yii-console' => [
+        'commands' => [
+            'user/create' => CreateCommand::class,
+            'user/assignRole' => AssignRoleCommand::class,
+        ],
     ],
 
     'yiisoft/yii-cycle' => [
