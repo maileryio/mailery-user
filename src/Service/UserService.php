@@ -25,11 +25,6 @@ use Yiisoft\Data\Reader\Filter\FilterInterface;
 class UserService
 {
     /**
-     * @var User
-     */
-    private User $user;
-
-    /**
      * @var UserRepository
      */
     private UserRepository $userRepo;
@@ -38,18 +33,9 @@ class UserService
      * @param User $user
      * @param UserRepository $userRepo
      */
-    public function __construct(User $user, UserRepository $userRepo)
+    public function __construct(UserRepository $userRepo)
     {
-        $this->user = $user;
         $this->userRepo = $userRepo;
-    }
-
-    /**
-     * @return User|null
-     */
-    public function getCurrentUser(): ?User
-    {
-        return $this->user->getIdentity();
     }
 
     /**
@@ -78,7 +64,7 @@ class UserService
 
         return new OffsetPaginator(
             $dataReader->withSort(
-                (new Sort([]))->withOrder(['id' => 'DESC'])
+                Sort::only(['id'])->withOrder(['id' => 'DESC'])
             )
         );
     }

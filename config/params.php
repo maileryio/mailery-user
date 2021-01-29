@@ -12,9 +12,7 @@ declare(strict_types=1);
 
 use Mailery\Menu\MenuItem;
 use Opis\Closure\SerializableClosure;
-use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\Router\UrlGeneratorInterface;
-use Yiisoft\Injector\Injector;
 use Mailery\User\Console\CreateCommand;
 use Mailery\User\Console\AssignRoleCommand;
 
@@ -53,17 +51,6 @@ return [
                     }))
                     ->withOrder(300),
             ],
-        ],
-    ],
-
-    'dispatcher' => [
-        'middlewares' => [
-            function (UrlGeneratorInterface $urlGenerator, Injector $injector) {
-                return $injector->make(Authentication::class)
-                    ->withOptionalPatterns([
-                        $urlGenerator->generate('/user/auth/login'),
-                    ]);
-            }
         ],
     ],
 ];

@@ -20,7 +20,6 @@ use Mailery\User\Service\UserCrudService;
 use Mailery\User\ValueObject\UserValueObject;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Yiisoft\Security\PasswordHasher;
 
 class UserForm extends Form
 {
@@ -94,7 +93,7 @@ class UserForm extends Form
         $valueObject = UserValueObject::fromForm($this)
             ->withEmail($email)
             ->withUsername($username)
-            ->withPassword((new PasswordHasher)->hash($password));
+            ->withPassword($password);
 
         if (($user = $this->user) === null) {
             $user = $this->userCrudService->create($valueObject);

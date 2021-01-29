@@ -32,8 +32,6 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     const STATUS_ACTIVE = 'active';
     const STATUS_DISABLED = 'disabled';
 
-    const PASSWORD_RESET_TOKEN_EXPIRE = 3600;
-
     /**
      * @Cycle\Annotated\Annotation\Column(type = "primary")
      * @var int|null
@@ -53,7 +51,7 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     private $username;
 
     /**
-     * @Cycle\Annotated\Annotation\Column(type = "string(64)", nullable = true)
+     * @Cycle\Annotated\Annotation\Column(type = "string(255)")
      */
     private $password;
 
@@ -152,7 +150,7 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
      */
     public function validatePassword(string $password): bool
     {
-        return (new PasswordHasher())->validate($password, $this->passwordHash);
+        return (new PasswordHasher())->validate($password, $this->password);
     }
 
     /**

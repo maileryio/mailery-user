@@ -49,6 +49,7 @@ class UserCrudService
         $user = (new User())
             ->setEmail($valueObject->getEmail())
             ->setUsername($valueObject->getUsername())
+            ->setPassword($valueObject->getPassword())
         ;
 
         $tr = new Transaction($this->orm);
