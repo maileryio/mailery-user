@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Yiisoft\Http\Method;
 use Yiisoft\Router\UrlGeneratorInterface as UrlGenerator;
 use Yiisoft\Yii\View\ViewRenderer;
+use Yiisoft\User\User;
 
 class AuthController
 {
@@ -23,11 +24,6 @@ class AuthController
      * @var ResponseFactory
      */
     private ResponseFactory $responseFactory;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
 
     /**
      * @param ViewRenderer $viewRenderer
@@ -77,17 +73,19 @@ class AuthController
     }
 
     /**
+     * @param User $user
+     * @param UrlGenerator $urlGenerator
      * @return Response
      */
-    public function logout(): Response
+    public function logout(User $user, UrlGenerator $urlGenerator): Response
     {
-        $this->user->logout();
+        $user->logout();
 
         return $this->responseFactory
             ->createResponse(302)
             ->withHeader(
                 'Location',
-                $this->urlGenerator->generate('/brand/default/index')
+                $urlGenerator->generate('/brand/default/index')
             );
     }
 }

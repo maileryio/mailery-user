@@ -51,10 +51,36 @@ return [
                 'label' => static function () {
                     return 'My profile';
                 },
-                'url' => static function (UrlGeneratorInterface $urlGenerator) {
-                    return $urlGenerator->generate('/user/auth/logout');
-                },
                 'order' => 300,
+                'items' => [
+                    'profile' => [
+                        'label' => static function () {
+                            return 'View profile';
+                        },
+                        'url' => static function (UrlGeneratorInterface $urlGenerator) {
+                            return '#';
+                        },
+                        'order' => 100,
+                    ],
+                    'settings' => [
+                        'label' => static function () {
+                            return 'Account settings';
+                        },
+                        'url' => static function (UrlGeneratorInterface $urlGenerator) {
+                            return '#';
+                        },
+                        'order' => 200,
+                    ],
+                    'logout' => [
+                        'label' => static function () {
+                            return 'Logout';
+                        },
+                        'url' => static function (UrlGeneratorInterface $urlGenerator) {
+                            return $urlGenerator->generate('/user/auth/logout');
+                        },
+                        'order' => 300,
+                    ],
+                ],
             ],
         ],
     ],
