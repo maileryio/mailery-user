@@ -17,13 +17,6 @@ use Mailery\User\Console\CreateCommand;
 use Mailery\User\Console\AssignRoleCommand;
 
 return [
-    'usersNavbarMenuItem' => (new MenuItem())
-        ->withLabel('Users')
-        ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {
-            return $urlGenerator->generate('/user/default/index');
-        }))
-        ->withOrder(100),
-
     'yiisoft/user' => [
         'authUrl' => '/user/login',
     ],
@@ -41,15 +34,29 @@ return [
         ],
     ],
 
-    'menu' => [
-        'navbar' => [
-            'items' => [
-                'profile' => (new MenuItem())
-                    ->withLabel('My profile')
-                    ->withUrl(new SerializableClosure(function (UrlGeneratorInterface $urlGenerator) {
-                        return $urlGenerator->generate('/user/auth/logout');
-                    }))
-                    ->withOrder(300),
+    'maileryio/mailery-menu-navbar' => [
+        'items' => [
+            'system' => [
+                'items' => [
+                    'users' => [
+                        'label' => static function () {
+                            return 'Users';
+                        },
+                        'url' => static function (UrlGeneratorInterface $urlGenerator) {
+                            return $urlGenerator->generate('/user/default/index');
+                        },
+                        'order' => 100,
+                    ],
+                ],
+            ],
+            'profile' => [
+                'label' => static function () {
+                    return 'My profile';
+                },
+                'url' => static function (UrlGeneratorInterface $urlGenerator) {
+                    return $urlGenerator->generate('/user/auth/logout');
+                },
+                'order' => 300,
             ],
         ],
     ],

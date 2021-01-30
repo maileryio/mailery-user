@@ -13,11 +13,6 @@ declare(strict_types=1);
 use Mailery\User\Repository\UserRepository;
 use Yiisoft\Auth\IdentityRepositoryInterface;
 
-$navbarSystem = $params['menu']['navbar']['items']['system'];
-$navbarSystemChilds = $navbarSystem->getChildItems();
-$navbarSystemChilds['users'] = $params['usersNavbarMenuItem'];
-$navbarSystem->setChildItems($navbarSystemChilds);
-
 return [
     IdentityRepositoryInterface::class => UserRepository::class,
 ];
