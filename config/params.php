@@ -10,8 +10,6 @@ declare(strict_types=1);
  * @copyright Copyright (c) 2020, Mailery (https://mailery.io/)
  */
 
-use Mailery\Menu\MenuItem;
-use Opis\Closure\SerializableClosure;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Mailery\User\Console\CreateCommand;
 use Mailery\User\Console\AssignRoleCommand;
