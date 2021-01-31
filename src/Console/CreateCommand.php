@@ -11,8 +11,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Yiisoft\Rbac\Manager;
-use Yiisoft\Rbac\StorageInterface;
 use Yiisoft\Yii\Console\ExitCode;
 use FormManager\Inputs\Input as FormInput;
 
@@ -24,30 +22,16 @@ class CreateCommand extends Command
     private UserForm $userForm;
 
     /**
-     * @var Manager
-     */
-    private Manager $manager;
-
-    /**
-     * @var StorageInterface
-     */
-    private StorageInterface $storage;
-
-    /**
      * @var string
      */
     protected static $defaultName = 'user/create';
 
     /**
      * @param UserForm $userForm
-     * @param Manager $manager
-     * @param StorageInterface $storage
      */
-    public function __construct(UserForm $userForm, Manager $manager, StorageInterface $storage)
+    public function __construct(UserForm $userForm)
     {
         $this->userForm = $userForm;
-        $this->manager = $manager;
-        $this->storage = $storage;
         parent::__construct();
     }
 
@@ -88,6 +72,7 @@ class CreateCommand extends Command
             'password' => $password,
             'confirmPassword' => $password,
             'status' => $status,
+            'role' => $role,
         ]);
 
         try {
@@ -106,10 +91,6 @@ class CreateCommand extends Command
                         )
                     );
                 }
-            }
-
-            if ($role) {
-                $this->manager->assign($this->storage->getRoleByName($role), $user->getId());
             }
 
             $io->success('User created');

@@ -18,8 +18,11 @@ use Mailery\User\Entity\User;
 use Mailery\User\Repository\UserRepository;
 use Mailery\User\Service\UserCrudService;
 use Mailery\User\ValueObject\UserValueObject;
+use Mailery\User\Enum\Rbac as UserRbac;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Yiisoft\Rbac\Manager;
+use Yiisoft\Rbac\StorageInterface;
 
 class UserForm extends Form
 {
@@ -39,15 +42,31 @@ class UserForm extends Form
     private UserCrudService $userCrudService;
 
     /**
+     * @var Manager
+     */
+    private Manager $manager;
+
+    /**
+     * @var StorageInterface
+     */
+    private StorageInterface $storage;
+
+    /**
      * @param UserRepository $userRepo
      * @param UserCrudService $userCrudService
+     * @param Manager $manager
+     * @param StorageInterface $storage
      */
     public function __construct(
         UserRepository $userRepo,
-        UserCrudService $userCrudService
+        UserCrudService $userCrudService,
+        Manager $manager,
+        StorageInterface $storage
     ) {
         $this->userRepo = $userRepo;
         $this->userCrudService = $userCrudService;
+        $this->manager = $manager;
+        $this->storage = $storage;
         parent::__construct($this->inputs());
     }
 
@@ -89,6 +108,7 @@ class UserForm extends Form
         $email = $this['email']->getValue();
         $username = $this['username']->getValue();
         $password = $this['password']->getValue();
+        $role = $this['role']->getValue();
 
         $valueObject = UserValueObject::fromForm($this)
             ->withEmail($email)
@@ -100,6 +120,11 @@ class UserForm extends Form
         } else {
             $this->userCrudService->update($user, $valueObject);
         }
+
+        foreach ($this->manager->getRolesByUser($user->getId()) as $userRole) {
+            $this->manager->revoke($userRole, $user->getId());
+        }
+        $this->manager->assign($this->storage->getRoleByName($role), $user->getId());
 
         return $user;
     }
@@ -153,14 +178,10 @@ class UserForm extends Form
             },
         ]);
 
+        $roleOptions = $this->getRoleOptions();
         $statusOptions = $this->getStatusOptions();
 
         return [
-            'status' => F::select('Status', $statusOptions)
-                ->addConstraint(new Constraints\NotBlank())
-                ->addConstraint(new Constraints\Choice([
-                    'choices' => array_keys($statusOptions),
-                ])),
             'email' => F::text('Email')
                 ->addConstraint(new Constraints\NotBlank())
                 ->addConstraint(new Constraints\Email())
@@ -183,7 +204,28 @@ class UserForm extends Form
                 ->addConstraint(new Constraints\NotBlank())
                 ->addConstraint($confirmPasswordConstraint),
 
+            'role' => F::select('Role', $roleOptions)
+                ->addConstraint(new Constraints\NotBlank())
+                ->addConstraint(new Constraints\Choice([
+                    'choices' => array_keys($roleOptions),
+                ])),
+            'status' => F::select('Status', $statusOptions)
+                ->addConstraint(new Constraints\NotBlank())
+                ->addConstraint(new Constraints\Choice([
+                    'choices' => array_keys($statusOptions),
+                ])),
+
             '' => F::submit($this->user === null ? 'Create' : 'Update'),
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getRoleOptions(): array
+    {
+        return [
+            UserRbac::ROLE_ADMIN => 'Admin',
         ];
     }
 
