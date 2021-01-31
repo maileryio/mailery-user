@@ -19,12 +19,31 @@ use Yiisoft\Yii\Cycle\Command\CycleDependencyProxy;
 
 class AssignRoleCommand extends Command
 {
+    /**
+     * @var CycleDependencyProxy
+     */
     private CycleDependencyProxy $promise;
+
+    /**
+     * @var Manager
+     */
     private Manager $manager;
+
+    /**
+     * @var StorageInterface
+     */
     private StorageInterface $storage;
 
+    /**
+     * @var string
+     */
     protected static $defaultName = 'user/assignRole';
 
+    /**
+     * @param CycleDependencyProxy $promise
+     * @param Manager $manager
+     * @param StorageInterface $storage
+     */
     public function __construct(CycleDependencyProxy $promise, Manager $manager, StorageInterface $storage)
     {
         $this->promise = $promise;
@@ -33,6 +52,9 @@ class AssignRoleCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * @return void
+     */
     public function configure(): void
     {
         $this
@@ -42,6 +64,12 @@ class AssignRoleCommand extends Command
             ->addArgument('userId', InputArgument::REQUIRED, 'User id');
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
