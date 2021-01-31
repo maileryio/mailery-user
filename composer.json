@@ -63,7 +63,10 @@
             "params": "config/params.php",
             "common": "config/common.php",
             "web": "config/web.php",
-            "providers-web": "config/providers-web.php"
+            "providers-web": "config/providers-web.php",
+            "rbac-assignments": "config/rbac/assignments.php",
+            "rbac-items": "config/rbac/items.php",
+            "rbac-rules": "config/rbac/rules.php"
         }
     },
     "config": {

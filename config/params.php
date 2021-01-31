@@ -13,6 +13,7 @@ declare(strict_types=1);
 use Yiisoft\Router\UrlGeneratorInterface;
 use Mailery\User\Console\CreateCommand;
 use Mailery\User\Console\AssignRoleCommand;
+use Mailery\Menu\MenuItem;
 
 return [
     'yiisoft/user' => [
@@ -78,6 +79,7 @@ return [
                         'url' => static function (UrlGeneratorInterface $urlGenerator) {
                             return $urlGenerator->generate('/user/auth/logout');
                         },
+                        'method' => MenuItem::METHOD_POST,
                         'order' => 300,
                     ],
                 ],

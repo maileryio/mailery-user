@@ -5,6 +5,7 @@ namespace Mailery\User\Console;
 
 use Mailery\User\Entity\User;
 use Mailery\User\Form\UserForm;
+use Mailery\User\Enum\Rbac;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -50,6 +51,9 @@ class CreateCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * @return void
+     */
     public function configure(): void
     {
         $this
@@ -58,9 +62,16 @@ class CreateCommand extends Command
             ->addArgument('email', InputArgument::REQUIRED, 'Email')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
             ->addArgument('password', InputArgument::REQUIRED, 'Password')
-            ->addArgument('status', InputArgument::OPTIONAL, 'Status');
+            ->addArgument('status', InputArgument::OPTIONAL, 'Status')
+            ->addArgument('role', InputArgument::OPTIONAL, 'Role');
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     * @throws \RuntimeException
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -69,6 +80,7 @@ class CreateCommand extends Command
         $username = $input->getArgument('username');
         $password = $input->getArgument('password');
         $status = $input->getArgument('status') ?? User::STATUS_ACTIVE;
+        $role = $input->getArgument('role') ?? Rbac::ROLE_ADMIN;
 
         $this->userForm->setValue([
             'email' => $email,
@@ -81,7 +93,7 @@ class CreateCommand extends Command
         try {
             if (($user = $this->userForm->save()) === null) {
                 foreach ($this->userForm as $input) {
-                    /** @var $input FormInput */
+                    /** @var FormInput $input */
                     if (($error = $input->getError()) === null) {
                         continue;
                     }
@@ -96,9 +108,9 @@ class CreateCommand extends Command
                 }
             }
 
-//            if ($isAdmin) {
-//                $this->manager->assign($this->storage->getRoleByName('admin'), $user->getId());
-//            }
+            if ($role) {
+                $this->manager->assign($this->storage->getRoleByName($role), $user->getId());
+            }
 
             $io->success('User created');
         } catch (\Throwable $t) {
