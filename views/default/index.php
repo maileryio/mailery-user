@@ -89,6 +89,7 @@ $this->setTitle('All users');
                             $urlGenerator->generate('/user/default/edit', ['id' => $data->getId()]),
                             [
                                 'class' => 'text-decoration-none mr-3',
+                                'encode' => false,
                             ]
                         );
                     })
@@ -108,6 +109,7 @@ $this->setTitle('All users');
                             ->confirm('Are you sure?')
                             ->options([
                                 'class' => 'text-decoration-none text-danger',
+                                'encode' => false,
                             ]);
                     }),
             ]);
