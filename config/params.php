@@ -44,7 +44,6 @@ return [
                         'url' => static function (UrlGeneratorInterface $urlGenerator) {
                             return $urlGenerator->generate('/user/default/index');
                         },
-                        'order' => 100,
                     ],
                 ],
             ],
@@ -52,7 +51,6 @@ return [
                 'label' => static function () {
                     return 'My profile';
                 },
-                'order' => 300,
                 'items' => [
                     'profile' => [
                         'label' => static function () {
@@ -61,7 +59,6 @@ return [
                         'url' => static function (UrlGeneratorInterface $urlGenerator) {
                             return '#';
                         },
-                        'order' => 100,
                     ],
                     'settings' => [
                         'label' => static function () {
@@ -70,7 +67,6 @@ return [
                         'url' => static function (UrlGeneratorInterface $urlGenerator) {
                             return '#';
                         },
-                        'order' => 200,
                     ],
                     'logout' => [
                         'label' => static function () {
@@ -80,7 +76,6 @@ return [
                             return $urlGenerator->generate('/user/auth/logout');
                         },
                         'method' => MenuItem::METHOD_POST,
-                        'order' => 300,
                     ],
                 ],
             ],
