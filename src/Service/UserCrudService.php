@@ -17,6 +17,8 @@ use Cycle\ORM\Transaction;
 use Mailery\User\Entity\User;
 use Mailery\User\ValueObject\UserValueObject;
 use Mailery\User\Repository\UserRepository;
+use Yiisoft\Rbac\Manager;
+use Yiisoft\Rbac\StorageInterface;
 
 class UserCrudService
 {
@@ -31,13 +33,31 @@ class UserCrudService
     private UserRepository $userRepo;
 
     /**
+     * @var Manager
+     */
+    private Manager $manager;
+
+    /**
+     * @var StorageInterface
+     */
+    private StorageInterface $storage;
+
+    /**
      * @param ORMInterface $orm
      * @param UserRepository $userRepo
+     * @param Manager $manager
+     * @param StorageInterface $storage
      */
-    public function __construct(ORMInterface $orm, UserRepository $userRepo)
-    {
+    public function __construct(
+        ORMInterface $orm,
+        UserRepository $userRepo,
+        Manager $manager,
+        StorageInterface $storage
+    ) {
         $this->orm = $orm;
         $this->userRepo = $userRepo;
+        $this->manager = $manager;
+        $this->storage = $storage;
     }
 
     /**
@@ -50,11 +70,14 @@ class UserCrudService
             ->setEmail($valueObject->getEmail())
             ->setUsername($valueObject->getUsername())
             ->setPassword($valueObject->getPassword())
+            ->setStatus($valueObject->getStatus())
         ;
 
         $tr = new Transaction($this->orm);
         $tr->persist($user);
         $tr->run();
+
+        $this->reassignRole($user, $valueObject->getRole());
 
         return $user;
     }
@@ -70,11 +93,14 @@ class UserCrudService
             ->setEmail($valueObject->getEmail())
             ->setUsername($valueObject->getUsername())
             ->setPassword($valueObject->getPassword())
+            ->setStatus($valueObject->getStatus())
         ;
 
         $tr = new Transaction($this->orm);
         $tr->persist($user);
         $tr->run();
+
+        $this->reassignRole($user, $valueObject->getRole());
 
         return $user;
     }
@@ -90,5 +116,18 @@ class UserCrudService
         $tr->run();
 
         return true;
+    }
+
+    /**
+     * @param User $user
+     * @param string $role
+     * @return void
+     */
+    private function reassignRole(User $user, string $role): void
+    {
+        foreach ($this->manager->getRolesByUser($user->getId()) as $userRole) {
+            $this->manager->revoke($userRole, $user->getId());
+        }
+        $this->manager->assign($this->storage->getRoleByName($role), $user->getId());
     }
 }

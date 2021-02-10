@@ -32,6 +32,16 @@ class UserValueObject
     private string $password;
 
     /**
+     * @var string
+     */
+    private string $role;
+
+    /**
+     * @var string
+     */
+    private string $status;
+
+    /**
      * @param UserForm $form
      * @return self
      */
@@ -42,6 +52,8 @@ class UserValueObject
         $new->email = $form['email']->getValue();
         $new->username = $form['username']->getValue();
         $new->password = $form['password']->getValue();
+        $new->role = $form['role']->getValue();
+        $new->status = $form['status']->getValue();
 
         return $new;
     }
@@ -68,6 +80,22 @@ class UserValueObject
     public function getPassword(): string
     {
         return $this->password;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRole(): string
+    {
+        return $this->role;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
     }
 
     /**
@@ -102,6 +130,30 @@ class UserValueObject
     {
         $new = clone $this;
         $new->password = $password;
+
+        return $new;
+    }
+
+    /**
+     * @param string $role
+     * @return self
+     */
+    public function withRole(string $role): self
+    {
+        $new = clone $this;
+        $new->role = $role;
+
+        return $new;
+    }
+
+    /**
+     * @param string $status
+     * @return self
+     */
+    public function withStatus(string $status): self
+    {
+        $new = clone $this;
+        $new->status = $status;
 
         return $new;
     }

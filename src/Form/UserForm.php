@@ -23,6 +23,7 @@ use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\StorageInterface;
+use Yiisoft\Rbac\Role;
 
 class UserForm extends Form
 {
@@ -92,6 +93,8 @@ class UserForm extends Form
 
         $this['email']->setValue($user->getEmail());
         $this['username']->setValue($user->getUsername());
+//        $this['role']->setValue($user->getEmail());
+        $this['status']->setValue($user->getStatus());
 
         return $this;
     }
@@ -105,26 +108,13 @@ class UserForm extends Form
             return null;
         }
 
-        $email = $this['email']->getValue();
-        $username = $this['username']->getValue();
-        $password = $this['password']->getValue();
-        $role = $this['role']->getValue();
-
-        $valueObject = UserValueObject::fromForm($this)
-            ->withEmail($email)
-            ->withUsername($username)
-            ->withPassword($password);
+        $valueObject = UserValueObject::fromForm($this);
 
         if (($user = $this->user) === null) {
             $user = $this->userCrudService->create($valueObject);
         } else {
             $this->userCrudService->update($user, $valueObject);
         }
-
-        foreach ($this->manager->getRolesByUser($user->getId()) as $userRole) {
-            $this->manager->revoke($userRole, $user->getId());
-        }
-        $this->manager->assign($this->storage->getRoleByName($role), $user->getId());
 
         return $user;
     }
@@ -224,9 +214,13 @@ class UserForm extends Form
      */
     private function getRoleOptions(): array
     {
-        return [
-            UserRbac::ROLE_ADMIN => 'Admin',
-        ];
+        $roles = [];
+        foreach ($this->storage->getRoles() as $role) {
+            /** @var Role $role */
+            $roles[$role->getName()] = $role->getName();
+        }
+
+        return $roles;
     }
 
     /**
