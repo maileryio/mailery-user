@@ -40,14 +40,17 @@ class CreateCommand extends Command
      */
     public function configure(): void
     {
+        $statuses = array_keys($this->userForm->getStatusOptions());
+        $roles = array_keys($this->userForm->getRoleOptions());
+
         $this
             ->setDescription('Creates a user')
             ->setHelp('This command allows you to create a user')
             ->addArgument('email', InputArgument::REQUIRED, 'Email')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
             ->addArgument('password', InputArgument::REQUIRED, 'Password')
-            ->addArgument('status', InputArgument::OPTIONAL, 'Status')
-            ->addArgument('role', InputArgument::OPTIONAL, 'Role');
+            ->addArgument('status', InputArgument::OPTIONAL, sprintf('Status (%s)', implode(', ', $statuses)))
+            ->addArgument('role', InputArgument::OPTIONAL, sprintf('Role (%s)', implode(', ', $roles)));
     }
 
     /**

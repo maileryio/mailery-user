@@ -77,7 +77,8 @@ class UserCrudService
         $tr->persist($user);
         $tr->run();
 
-        $this->reassignRole($user, $valueObject->getRole());
+        $role = $this->storage->getRoleByName($valueObject->getRole());
+        $this->manager->assign($role, $user->getId());
 
         return $user;
     }
@@ -100,7 +101,12 @@ class UserCrudService
         $tr->persist($user);
         $tr->run();
 
-        $this->reassignRole($user, $valueObject->getRole());
+        foreach ($this->manager->getRolesByUser($user->getId()) as $userRole) {
+            $this->manager->revoke($userRole, $user->getId());
+        }
+
+        $role = $this->storage->getRoleByName($valueObject->getRole());
+        $this->manager->assign($role, $user->getId());
 
         return $user;
     }
@@ -116,18 +122,5 @@ class UserCrudService
         $tr->run();
 
         return true;
-    }
-
-    /**
-     * @param User $user
-     * @param string $role
-     * @return void
-     */
-    private function reassignRole(User $user, string $role): void
-    {
-        foreach ($this->manager->getRolesByUser($user->getId()) as $userRole) {
-            $this->manager->revoke($userRole, $user->getId());
-        }
-        $this->manager->assign($this->storage->getRoleByName($role), $user->getId());
     }
 }

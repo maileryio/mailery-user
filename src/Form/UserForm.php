@@ -212,7 +212,7 @@ class UserForm extends Form
     /**
      * @return array
      */
-    private function getRoleOptions(): array
+    public function getRoleOptions(): array
     {
         $roles = [];
         foreach ($this->storage->getRoles() as $role) {
@@ -226,7 +226,7 @@ class UserForm extends Form
     /**
      * @return array
      */
-    private function getStatusOptions(): array
+    public function getStatusOptions(): array
     {
         return [
             User::STATUS_ACTIVE => 'Active',
