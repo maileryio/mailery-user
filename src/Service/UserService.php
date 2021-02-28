@@ -15,11 +15,11 @@ namespace Mailery\User\Service;
 use Mailery\User\Search\DefaultSearchBy;
 use Mailery\Widget\Search\Form\SearchForm;
 use Mailery\Widget\Search\Model\SearchByList;
-use Yiisoft\Data\Paginator\PaginatorInterface;
+use Mailery\User\Entity\User;
 use Mailery\User\Repository\UserRepository;
 use Yiisoft\Data\Paginator\OffsetPaginator;
+use Yiisoft\Data\Paginator\PaginatorInterface;
 use Yiisoft\Data\Reader\Sort;
-use Yiisoft\User\User;
 use Yiisoft\Data\Reader\Filter\FilterInterface;
 
 class UserService

@@ -85,13 +85,13 @@ $this->setTitle('All users');
                     ->view('')
                     ->update(function (User $data, int $index) use ($urlGenerator) {
                         return Html::a(
-                            (string) Icon::widget()->name('pencil'),
+                            Icon::widget()->name('pencil')->render(),
                             $urlGenerator->generate('/user/default/edit', ['id' => $data->getId()]),
                             [
                                 'class' => 'text-decoration-none mr-3',
-                                'encode' => false,
                             ]
-                        );
+                        )
+                        ->encode(false);
                     })
                     ->delete(''),
                 (new ActionColumn())
@@ -103,14 +103,14 @@ $this->setTitle('All users');
                     ->update('')
                     ->delete(function (User $data, int $index) use ($urlGenerator) {
                         return Link::widget()
-                            ->label((string) Icon::widget()->name('delete')->options(['class' => 'mr-1']))
+                            ->label(Icon::widget()->name('delete')->options(['class' => 'mr-1'])->render())
                             ->method('delete')
                             ->href($urlGenerator->generate('/user/default/delete', ['id' => $data->getId()]))
                             ->confirm('Are you sure?')
                             ->options([
                                 'class' => 'text-decoration-none text-danger',
-                                'encode' => false,
-                            ]);
+                            ])
+                            ->encode(false);
                     }),
             ]);
         ?>

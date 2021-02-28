@@ -20,14 +20,14 @@ $this->setTitle($user->getUsername());
             <h1 class="h3">User #<?= $user->getId(); ?></h1>
             <div class="btn-toolbar float-right">
                 <?= Link::widget()
-                    ->label((string) Icon::widget()->name('delete')->options(['class' => 'mr-1']) . ' Delete')
+                    ->label(Icon::widget()->name('delete')->options(['class' => 'mr-1'])->render() . ' Delete')
                     ->method('delete')
                     ->href($urlGenerator->generate('/user/default/delete', ['id' => $user->getId()]))
                     ->confirm('Are you sure?')
                     ->options([
                         'class' => 'btn btn-sm btn-danger mx-sm-1 mb-2',
-                        'encode' => false,
-                    ]);
+                    ])
+                    ->encode(false);
                 ?>
                 <a class="btn btn-sm btn-secondary mx-sm-1 mb-2" href="<?= $urlGenerator->generate('/user/default/edit', ['id' => $user->getId()]); ?>">
                     <?= Icon::widget()->name('pencil')->options(['class' => 'mr-1']); ?>

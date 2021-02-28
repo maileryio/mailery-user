@@ -6,16 +6,16 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as Handler;
 use Psr\Http\Message\ResponseInterface as Response;
-use Yiisoft\User\User;
+use Yiisoft\User\CurrentUser;
 use Mailery\User\Entity\User as UserEntity;
 use Mailery\User\Service\CurrentUserService;
 
 class CurrentUserMiddleware implements MiddlewareInterface
 {
     /**
-     * @var User
+     * @var CurrentUser
      */
-    private User $user;
+    private CurrentUser $user;
 
     /**
      * @var CurrentUserService
@@ -23,10 +23,10 @@ class CurrentUserMiddleware implements MiddlewareInterface
     private CurrentUserService $currentUser;
 
     /**
-     * @param User $user
+     * @param CurrentUser $user
      * @param CurrentUserService $currentUser
      */
-    public function __construct(User $user, CurrentUserService $currentUser)
+    public function __construct(CurrentUser $user, CurrentUserService $currentUser)
     {
         $this->user = $user;
         $this->currentUser = $currentUser;

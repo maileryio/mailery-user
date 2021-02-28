@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Yiisoft\Http\Method;
 use Yiisoft\Router\UrlGeneratorInterface as UrlGenerator;
 use Yiisoft\Yii\View\ViewRenderer;
-use Yiisoft\User\User;
+use Yiisoft\User\CurrentUser;
 
 class AuthController
 {
@@ -72,11 +72,11 @@ class AuthController
     }
 
     /**
-     * @param User $user
+     * @param CurrentUser $user
      * @param UrlGenerator $urlGenerator
      * @return Response
      */
-    public function logout(User $user, UrlGenerator $urlGenerator): Response
+    public function logout(CurrentUser $user, UrlGenerator $urlGenerator): Response
     {
         $user->logout();
 

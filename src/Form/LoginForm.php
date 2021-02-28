@@ -18,14 +18,14 @@ use Mailery\User\Repository\UserRepository;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Yiisoft\Auth\IdentityInterface;
-use Yiisoft\User\User;
+use Yiisoft\User\CurrentUser;
 
 class LoginForm extends Form
 {
     /**
-     * @var User
+     * @var CurrentUser
      */
-    private User $user;
+    private CurrentUser $user;
 
     /**
      * @var UserRepository
@@ -33,11 +33,11 @@ class LoginForm extends Form
     private UserRepository $userRepo;
 
     /**
-     * @param User $user
+     * @param CurrentUser $user
      * @param UserRepository $userRepo
      */
     public function __construct(
-        User $user,
+        CurrentUser $user,
         UserRepository $userRepo
     ) {
         $this->user = $user;
