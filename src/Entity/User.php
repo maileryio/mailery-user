@@ -39,13 +39,13 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     private $id;
 
     /**
-     * @Cycle\Annotated\Annotation\Column(type = "string(32)")
+     * @Cycle\Annotated\Annotation\Column(type = "string(255)")
      * @var string
      */
     private $email;
 
     /**
-     * @Cycle\Annotated\Annotation\Column(type = "string(32)")
+     * @Cycle\Annotated\Annotation\Column(type = "string(255)")
      * @var string
      */
     private $username;
