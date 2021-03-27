@@ -18,26 +18,31 @@ final class RouteCollectorServiceProvider extends ServiceProvider
         $collector = $container->get(RouteCollectorInterface::class);
 
         $collector->addGroup(
-            Group::create(
-                '/user',
-                [
-                    Route::get('/default/index', [DefaultController::class, 'index'])
+            Group::create('/user')
+                ->routes(
+                    Route::get('/default/index')
+                        ->action([DefaultController::class, 'index'])
                         ->name('/user/default/index'),
-                    Route::get('/default/view/{id:\d+}', [DefaultController::class, 'view'])
+                    Route::get('/default/view/{id:\d+}')
+                        ->action([DefaultController::class, 'view'])
                         ->name('/user/default/view'),
-                    Route::methods(['GET', 'POST'], '/default/create', [DefaultController::class, 'create'])
+                    Route::methods(['GET', 'POST'], '/default/create')
+                        ->action([DefaultController::class, 'create'])
                         ->name('/user/default/create'),
-                    Route::methods(['GET', 'POST'], '/default/edit/{id:\d+}', [DefaultController::class, 'edit'])
+                    Route::methods(['GET', 'POST'], '/default/edit/{id:\d+}')
+                        ->action([DefaultController::class, 'edit'])
                         ->name('/user/default/edit'),
-                    Route::delete('/default/delete/{id:\d+}', [DefaultController::class, 'delete'])
+                    Route::delete('/default/delete/{id:\d+}')
+                        ->action([DefaultController::class, 'delete'])
                         ->name('/user/default/delete'),
 
-                    Route::methods(['GET', 'POST'], '/login', [AuthController::class, 'login'])
+                    Route::methods(['GET', 'POST'], '/login')
+                        ->action([AuthController::class, 'login'])
                         ->name('/user/auth/login'),
-                    Route::post('/logout', [AuthController::class, 'logout'])
-                        ->name('/user/auth/logout'),
-                ]
-            )
+                    Route::post('/logout')
+                        ->action([AuthController::class, 'logout'])
+                        ->name('/user/auth/logout')
+                )
         );
     }
 }
