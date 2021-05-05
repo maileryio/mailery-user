@@ -70,7 +70,6 @@ class DefaultController
 
     /**
      * @param Request $request
-     * @param UserService $userService
      * @return Response
      */
     public function index(Request $request): Response

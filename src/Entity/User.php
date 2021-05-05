@@ -175,6 +175,38 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     /**
      * @inheritdoc
      */
+    public function getIndexRouteName(): ?string
+    {
+        return '/user/default/index';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getIndexRouteParams(): array
+    {
+        return [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getViewRouteName(): ?string
+    {
+        return '/user/default/view';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getViewRouteParams(): array
+    {
+        return ['id' => $this->getId()];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getEditRouteName(): ?string
     {
         return '/user/default/edit';
@@ -191,15 +223,15 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     /**
      * @inheritdoc
      */
-    public function getViewRouteName(): ?string
+    public function getDeleteRouteName(): ?string
     {
-        return '/user/default/view';
+        return '/user/default/delete';
     }
 
     /**
      * @inheritdoc
      */
-    public function getViewRouteParams(): array
+    public function getDeleteRouteParams(): array
     {
         return ['id' => $this->getId()];
     }
