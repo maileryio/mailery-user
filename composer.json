@@ -27,12 +27,7 @@
         "maileryio/widget-dataview": "dev-master",
         "maileryio/widget-form": "dev-master",
         "maileryio/widget-link": "dev-master",
-        "maileryio/widget-search": "dev-master",
-        "yiisoft/auth": "^3.0",
-        "yiisoft/router": "^3.0@dev",
-        "yiisoft/session": "^1.0",
-        "yiisoft/user": "^3.0@dev",
-        "yiisoft/yii-cycle": "^3.0@dev"
+        "maileryio/widget-search": "dev-master"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.16",
