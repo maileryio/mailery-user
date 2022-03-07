@@ -9,28 +9,40 @@ use Yiisoft\Form\Widget\Form;
 /** @var string $csrf */
 
 ?>
-
-<div class="mb-4"></div>
 <div class="row">
-    <div class="col-6 offset-3">
+    <div class="col-12 col-xl-4">
         <?= Form::widget()
             ->options(
                 [
-                    'id' => 'form-login',
+                    'id' => 'form-user',
                     'csrf' => $csrf,
                     'enctype' => 'multipart/form-data',
                 ]
             )
             ->begin(); ?>
 
-        <?= $field->config($form, 'login'); ?>
+        <?= $field->config($form, 'email'); ?>
+
+        <?= $field->config($form, 'username'); ?>
 
         <?= $field->config($form, 'password')
                 ->passwordInput();
         ?>
 
+        <?= $field->config($form, 'confirmPassword')
+                ->passwordInput();
+        ?>
+
+        <?= $field->config($form, 'role')
+                ->dropDownList($form->getRoleListOptions());
+        ?>
+
+        <?= $field->config($form, 'status')
+                ->dropDownList($form->getStatusListOptions());
+        ?>
+
         <?= Html::submitButton(
-            'Login',
+            'Save',
             [
                 'class' => 'btn btn-primary float-right mt-2',
             ]

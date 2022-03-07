@@ -18,10 +18,15 @@ use Mailery\User\Service\UserCrudService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Yiisoft\Http\Method;
+use Yiisoft\Http\Status;
+use Yiisoft\Http\Header;
 use Yiisoft\Router\UrlGeneratorInterface as UrlGenerator;
 use Yiisoft\Yii\View\ViewRenderer;
 use Mailery\User\Repository\UserRepository;
 use Psr\Http\Message\ResponseFactoryInterface as ResponseFactory;
+use Mailery\User\ValueObject\UserValueObject;
+use Yiisoft\Validator\ValidatorInterface;
+use Yiisoft\Session\Flash\FlashInterface;
 
 class DefaultController
 {
@@ -38,6 +43,11 @@ class DefaultController
     private ResponseFactory $responseFactory;
 
     /**
+     * @var UrlGenerator
+     */
+    private UrlGenerator $urlGenerator;
+
+    /**
      * @var UserRepository
      */
     private UserRepository $userRepo;
@@ -48,24 +58,35 @@ class DefaultController
     private UserService $userService;
 
     /**
+     * @var UserCrudService
+     */
+    private UserCrudService $userCrudService;
+
+    /**
      * @param ViewRenderer $viewRenderer
      * @param ResponseFactory $responseFactory
+     * @param UrlGenerator $urlGenerator
      * @param UserRepository $userRepo
      * @param UserService $userService
+     * @param UserCrudService $userCrudService
      */
     public function __construct(
         ViewRenderer $viewRenderer,
         ResponseFactory $responseFactory,
+        UrlGenerator $urlGenerator,
         UserRepository $userRepo,
-        UserService $userService
+        UserService $userService,
+        UserCrudService $userCrudService
     ) {
         $this->viewRenderer = $viewRenderer
             ->withController($this)
             ->withViewPath(dirname(dirname(__DIR__)) . '/views');
 
         $this->responseFactory = $responseFactory;
+        $this->urlGenerator = $urlGenerator;
         $this->userRepo = $userRepo;
         $this->userService = $userService;
+        $this->userCrudService = $userCrudService;
     }
 
     /**
@@ -106,89 +127,70 @@ class DefaultController
 
     /**
      * @param Request $request
-     * @param UserForm $userForm
-     * @param UrlGenerator $urlGenerator
+     * @param ValidatorInterface $validator
+     * @param UserForm $form
      * @return Response
      */
-    public function create(Request $request, UserForm $userForm, UrlGenerator $urlGenerator): Response
+    public function create(Request $request, ValidatorInterface $validator, UserForm $form): Response
     {
-        $userForm
-            ->setAttributes([
-                'action' => $request->getUri()->getPath(),
-                'method' => 'post',
-                'enctype' => 'multipart/form-data',
-            ])
-        ;
+        $body = $request->getParsedBody();
 
-        $submitted = $request->getMethod() === Method::POST;
+        if (($request->getMethod() === Method::POST) && $form->load($body) && $validator->validate($form)->isValid()) {
+            $valueObject = UserValueObject::fromForm($form);
+            $user = $this->userCrudService->create($valueObject);
 
-        if ($submitted) {
-            $userForm->loadFromServerRequest($request);
-
-            if (($user = $userForm->save()) !== null) {
-                return $this->responseFactory
-                    ->createResponse(302)
-                    ->withHeader('Location', $urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
-            }
+            return $this->responseFactory
+                ->createResponse(Status::FOUND)
+                ->withHeader(Header::LOCATION, $this->urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
         }
 
-        return $this->viewRenderer->render('create', compact('userForm', 'submitted'));
+        return $this->viewRenderer->render('create', compact('form'));
     }
 
     /**
      * @param Request $request
-     * @param UserForm $userForm
-     * @param UrlGenerator $urlGenerator
+     * @param ValidatorInterface $validator
+     * @param FlashInterface $flash
+     * @param UserForm $form
      * @return Response
      */
-    public function edit(Request $request, UserForm $userForm, UrlGenerator $urlGenerator): Response
+    public function edit(Request $request, ValidatorInterface $validator, FlashInterface $flash, UserForm $form): Response
+    {
+        $body = $request->getParsedBody();
+        $userId = $request->getAttribute('id');
+        if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
+            return $this->responseFactory->createResponse(404);
+        }
+
+        $form = $form->withEntity($user);
+
+        if (($request->getMethod() === Method::POST) && $form->load($body) && $validator->validate($form)->isValid()) {
+            $valueObject = UserValueObject::fromForm($form);
+            $this->userCrudService->update($user, $valueObject);
+
+            return $this->responseFactory
+                ->createResponse(Status::FOUND)
+                ->withHeader(Header::LOCATION, $this->urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
+        }
+
+        return $this->viewRenderer->render('edit', compact('form', 'user'));
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function delete(Request $request): Response
     {
         $userId = $request->getAttribute('id');
         if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
             return $this->responseFactory->createResponse(404);
         }
 
-        $userForm = $userForm
-            ->setAttributes([
-                'action' => $request->getUri()->getPath(),
-                'method' => 'post',
-                'enctype' => 'multipart/form-data',
-            ])
-            ->withUser($user)
-        ;
-
-        $submitted = $request->getMethod() === Method::POST;
-
-        if ($submitted) {
-            $userForm->loadFromServerRequest($request);
-
-            if ($userForm->save() !== null) {
-                return $this->responseFactory
-                    ->createResponse(302)
-                    ->withHeader('Location', $urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
-            }
-        }
-
-        return $this->viewRenderer->render('edit', compact('user', 'userForm', 'submitted'));
-    }
-
-    /**
-     * @param Request $request
-     * @param UserCrudService $userCrudService
-     * @param UrlGenerator $urlGenerator
-     * @return Response
-     */
-    public function delete(Request $request, UserCrudService $userCrudService, UrlGenerator $urlGenerator): Response
-    {
-        $userId = $request->getAttribute('id');
-        if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
-            return $this->responseFactory->createResponse(404);
-        }
-
-        $userCrudService->delete($user);
+        $this->userCrudService->delete($user);
 
         return $this->responseFactory
             ->createResponse(302)
-            ->withHeader('Location', $urlGenerator->generate('/user/default/index'));
+            ->withHeader(Header::LOCATION, $this->urlGenerator->generate('/user/default/index'));
     }
 }

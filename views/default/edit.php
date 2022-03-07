@@ -1,14 +1,13 @@
 <?php declare(strict_types=1);
 
 use Mailery\Icon\Icon;
-use Mailery\Widget\Form\FormRenderer;
 
+/** @var Yiisoft\Form\Widget\Field $field */
 /** @var Yiisoft\Yii\WebView $this */
 /** @var Psr\Http\Message\ServerRequestInterface $request */
 /** @var Mailery\User\Entity\User $user */
-/** @var Mailery\User\Form\UserForm $userForm */
+/** @var Mailery\User\Form\UserForm $form */
 /** @var string $csrf */
-/** @var bool $submitted */
 
 $this->setTitle('Edit User #' . $user->getId());
 
@@ -29,8 +28,4 @@ $this->setTitle('Edit User #' . $user->getId());
     </div>
 </div>
 <div class="mb-2"></div>
-<div class="row">
-    <div class="col-6">
-        <?= (new FormRenderer($userForm->withCsrf($csrf)))($submitted); ?>
-    </div>
-</div>
+<?= $this->render('_form', compact('csrf', 'field', 'form')) ?>

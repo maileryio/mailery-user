@@ -12,21 +12,55 @@ declare(strict_types=1);
 
 namespace Mailery\User\Form;
 
-use FormManager\Factory as F;
-use FormManager\Form;
 use Mailery\User\Entity\User;
 use Mailery\User\Repository\UserRepository;
-use Mailery\User\Service\UserCrudService;
-use Mailery\User\ValueObject\UserValueObject;
-use Mailery\User\Enum\Rbac as UserRbac;
-use Symfony\Component\Validator\Constraints;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\StorageInterface;
 use Yiisoft\Rbac\Role;
+use Yiisoft\Form\HtmlOptions\RequiredHtmlOptions;
+use Yiisoft\Validator\Rule\Required;
+use Yiisoft\Form\HtmlOptions\HasLengthHtmlOptions;
+use Yiisoft\Validator\Rule\HasLength;
+use Yiisoft\Validator\Rule\Email;
+use Yiisoft\Form\HtmlOptions\EmailHtmlOptions;
+use Yiisoft\Form\FormModel;
+use Yiisoft\Validator\Rule\MatchRegularExpression;
+use Yiisoft\Validator\Rule\InRange;
+use Yiisoft\Validator\Rule\Callback;
+use Yiisoft\Validator\Result;
 
-class UserForm extends Form
+class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
 {
+
+    /**
+     * @var string|null
+     */
+    private ?string $email = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $username = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $password = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $confirmPassword = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $role = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $status = null;
+
     /**
      * @var User|null
      */
@@ -38,181 +72,162 @@ class UserForm extends Form
     private UserRepository $userRepo;
 
     /**
-     * @var UserCrudService
-     */
-    private UserCrudService $userCrudService;
-
-    /**
-     * @var Manager
-     */
-    private Manager $manager;
-
-    /**
      * @var StorageInterface
      */
     private StorageInterface $storage;
 
     /**
      * @param UserRepository $userRepo
-     * @param UserCrudService $userCrudService
-     * @param Manager $manager
      * @param StorageInterface $storage
      */
     public function __construct(
         UserRepository $userRepo,
-        UserCrudService $userCrudService,
-        Manager $manager,
         StorageInterface $storage
     ) {
         $this->userRepo = $userRepo;
-        $this->userCrudService = $userCrudService;
-        $this->manager = $manager;
         $this->storage = $storage;
-        parent::__construct($this->inputs());
-    }
 
-    /**
-     * @param string $csrf
-     * @return \self
-     */
-    public function withCsrf(string $value, string $name = '_csrf'): self
-    {
-        $this->offsetSet($name, F::hidden($value));
-
-        return $this;
+        parent::__construct();
     }
 
     /**
      * @param User $user
      * @return self
      */
-    public function withUser(User $user): self
+    public function withEntity(User $user): self
     {
-        $this->user = $user;
-        $this->offsetSet('', F::submit('Update'));
+        $new = clone $this;
+        $new->user = $user;
+        $new->email = $user->getEmail();
+        $new->username = $user->getUsername();
+        $new->status = $user->getStatus();
 
-        $this['email']->setValue($user->getEmail());
-        $this['username']->setValue($user->getUsername());
-//        $this['role']->setValue($user->getEmail());
-        $this['status']->setValue($user->getStatus());
-
-        return $this;
+        return $new;
     }
 
     /**
-     * @return User|null
+     * @return string|null
      */
-    public function save(): ?User
+    public function getEmail(): ?string
     {
-        if (!$this->isValid()) {
-            return null;
-        }
+        return $this->email;
+    }
 
-        $valueObject = UserValueObject::fromForm($this);
+    /**
+     * @return string|null
+     */
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
 
-        if (($user = $this->user) === null) {
-            $user = $this->userCrudService->create($valueObject);
-        } else {
-            $this->userCrudService->update($user, $valueObject);
-        }
+    /**
+     * @return string|null
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
 
-        return $user;
+    /**
+     * @return string|null
+     */
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getStatus(): ?string
+    {
+        return $this->status;
     }
 
     /**
      * @return array
      */
-    private function inputs(): array
+    public function getAttributeLabels(): array
     {
-        $emailConstraint = new Constraints\Callback([
-            'callback' => function ($value, ExecutionContextInterface $context) {
-                if (empty($value)) {
-                    return;
-                }
-
-                $user = $this->userRepo->findByEmail($value, $this->user);
-                if ($user !== null) {
-                    $context->buildViolation('This email already exists.')
-                        ->atPath('email')
-                        ->addViolation();
-                }
-            },
-        ]);
-
-        $usernameConstraint = new Constraints\Callback([
-            'callback' => function ($value, ExecutionContextInterface $context) {
-                if (empty($value)) {
-                    return;
-                }
-
-                $user = $this->userRepo->findByUsername($value, $this->user);
-                if ($user !== null) {
-                    $context->buildViolation('This username already exists.')
-                        ->atPath('username')
-                        ->addViolation();
-                }
-            },
-        ]);
-
-        $confirmPasswordConstraint = new Constraints\Callback([
-            'callback' => function ($value, ExecutionContextInterface $context) {
-                if (empty($value)) {
-                    return;
-                }
-
-                if ($value !== $this['password']->getValue()) {
-                    $context->buildViolation('Password and confirm password does not match.')
-                        ->atPath('confirmPassword')
-                        ->addViolation();
-                }
-            },
-        ]);
-
-        $roleOptions = $this->getRoleOptions();
-        $statusOptions = $this->getStatusOptions();
-
         return [
-            'email' => F::text('Email')
-                ->addConstraint(new Constraints\NotBlank())
-                ->addConstraint(new Constraints\Email())
-                ->addConstraint($emailConstraint),
-            'username' => F::text('Username')
-                ->addConstraint(new Constraints\NotBlank())
-                ->addConstraint(new Constraints\Length([
-                    'min' => 4,
-                ]))
-                ->addConstraint(new Constraints\Regex([
-                    'pattern' => '/^[a-zA-Z0-9]+$/i',
-                ]))
-                ->addConstraint($usernameConstraint),
-            'password' => F::password('Password')
-                ->addConstraint(new Constraints\NotBlank())
-                ->addConstraint(new Constraints\Length([
-                    'min' => 6,
-                ])),
-            'confirmPassword' => F::password('Confirm password')
-                ->addConstraint(new Constraints\NotBlank())
-                ->addConstraint($confirmPasswordConstraint),
-
-            'role' => F::select('Role', $roleOptions)
-                ->addConstraint(new Constraints\NotBlank())
-                ->addConstraint(new Constraints\Choice([
-                    'choices' => array_keys($roleOptions),
-                ])),
-            'status' => F::select('Status', $statusOptions)
-                ->addConstraint(new Constraints\NotBlank())
-                ->addConstraint(new Constraints\Choice([
-                    'choices' => array_keys($statusOptions),
-                ])),
-
-            '' => F::submit($this->user === null ? 'Create' : 'Update'),
+            'email' => 'Email',
+            'username' => 'Username',
+            'password' => 'Password',
+            'confirmPassword' => 'Confirm password',
+            'role' => 'Role',
+            'status' => 'Status',
         ];
     }
 
     /**
      * @return array
      */
-    public function getRoleOptions(): array
+    public function getRules(): array
+    {
+        return [
+            'email' => [
+                new RequiredHtmlOptions(Required::rule()),
+                new EmailHtmlOptions(Email::rule()),
+                new HasLengthHtmlOptions(HasLength::rule()->max(255)),
+                Callback::rule(function ($value) {
+                    $result = new Result();
+                    $record = $this->userRepo->findByEmail($value, $this->user);
+
+                    if ($record !== null) {
+                        $result->addError('This email already exists.');
+                    }
+
+                    return $result;
+                }),
+            ],
+            'username' => [
+                new RequiredHtmlOptions(Required::rule()),
+                new HasLengthHtmlOptions(HasLength::rule()->min(4)->max(255)),
+                MatchRegularExpression::rule('/^[a-zA-Z0-9]+$/i'),
+                Callback::rule(function ($value) {
+                    $result = new Result();
+                    $record = $this->userRepo->findByUsername($value, $this->user);
+
+                    if ($record !== null) {
+                        $result->addError('This username already exists.');
+                    }
+
+                    return $result;
+                }),
+            ],
+            'password' => [
+                new RequiredHtmlOptions(Required::rule()),
+                new HasLengthHtmlOptions(HasLength::rule()->min(6)->max(255)),
+            ],
+            'confirmPassword' => [
+                new RequiredHtmlOptions(Required::rule()),
+                new HasLengthHtmlOptions(HasLength::rule()->min(6)->max(255)),
+                Callback::rule(function ($value) {
+                    $result = new Result();
+
+                    if ($value !== $this->password) {
+                        $result->addError('Password and confirm password does not match.');
+                    }
+
+                    return $result;
+                }),
+            ],
+            'role' => [
+                new RequiredHtmlOptions(Required::rule()),
+                InRange::rule(array_keys($this->getRoleListOptions())),
+            ],
+            'status' => [
+                new RequiredHtmlOptions(Required::rule()),
+                InRange::rule(array_keys($this->getStatusListOptions())),
+            ],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoleListOptions(): array
     {
         $roles = [];
         foreach ($this->storage->getRoles() as $role) {
@@ -226,11 +241,12 @@ class UserForm extends Form
     /**
      * @return array
      */
-    public function getStatusOptions(): array
+    public function getStatusListOptions(): array
     {
         return [
             User::STATUS_ACTIVE => 'Active',
             User::STATUS_DISABLED => 'Disabled',
         ];
     }
+
 }

@@ -12,20 +12,28 @@ declare(strict_types=1);
 
 namespace Mailery\User\Form;
 
-use FormManager\Factory as F;
-use FormManager\Form;
 use Mailery\User\Repository\UserRepository;
-use Symfony\Component\Validator\Constraints;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Yiisoft\Auth\IdentityInterface;
-use Yiisoft\User\CurrentUser;
+use Yiisoft\Form\HtmlOptions\RequiredHtmlOptions;
+use Yiisoft\Validator\Rule\Required;
+use Yiisoft\Form\HtmlOptions\HasLengthHtmlOptions;
+use Yiisoft\Validator\Rule\HasLength;
+use Yiisoft\Form\FormModel;
+use Yiisoft\Validator\Rule\Callback;
+use Yiisoft\Validator\Result;
 
-class LoginForm extends Form
+class LoginForm extends FormModel
 {
+
     /**
-     * @var CurrentUser
+     * @var string|null
      */
-    private CurrentUser $user;
+    private ?string $login = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $password = null;
 
     /**
      * @var UserRepository
@@ -33,85 +41,63 @@ class LoginForm extends Form
     private UserRepository $userRepo;
 
     /**
-     * @param CurrentUser $user
      * @param UserRepository $userRepo
      */
-    public function __construct(
-        CurrentUser $user,
-        UserRepository $userRepo
-    ) {
-        $this->user = $user;
+    public function __construct(UserRepository $userRepo)
+    {
         $this->userRepo = $userRepo;
-        parent::__construct($this->inputs());
-    }
 
-    /**
-     * @param string $csrf
-     * @return \self
-     */
-    public function withCsrf(string $value, string $name = '_csrf'): self
-    {
-        $this->offsetSet($name, F::hidden($value));
-
-        return $this;
-    }
-
-    /**
-     * @return IdentityInterface|null
-     */
-    public function login(): ?IdentityInterface
-    {
-        if (!$this->isValid()) {
-            return null;
-        }
-
-        $login = $this['login']->getValue();
-        $password = $this['password']->getValue();
-
-        $identity = $this->userRepo->findByLogin($login);
-
-        if ($identity === null || !$identity->validatePassword($password)) {
-            throw new \InvalidArgumentException('Invalid login or password');
-        }
-
-        if (!$this->user->login($identity)) {
-            throw new \InvalidArgumentException('Unable to login');
-        }
-
-        return $identity;
+        parent::__construct();
     }
 
     /**
      * @return array
      */
-    private function inputs(): array
+    public function getAttributeLabels(): array
     {
-        $passwordConstraint = new Constraints\Callback([
-            'callback' => function ($value, ExecutionContextInterface $context) {
-                if (empty($value)) {
-                    return;
-                }
-
-                $login = $this['login']->getValue();
-                $password = $this['password']->getValue();
-
-                $user = $this->userRepo->findByLogin($login);
-                if ($user === null || !$user->validatePassword($password)) {
-                    $context->buildViolation('Invalid login or password.')
-                        ->atPath('password')
-                        ->addViolation();
-                }
-            },
-        ]);
-
         return [
-            'login' => F::text('Login')
-                ->addConstraint(new Constraints\NotBlank()),
-            'password' => F::password('Password')
-                ->addConstraint(new Constraints\NotBlank())
-                ->addConstraint($passwordConstraint),
-
-            '' => F::submit('Submit'),
+            'login' => 'Login',
+            'password' => 'Password',
         ];
     }
+
+    /**
+     * @return array
+     */
+    public function getRules(): array
+    {
+        return [
+            'login' => [
+                new RequiredHtmlOptions(Required::rule()),
+                new HasLengthHtmlOptions(HasLength::rule()->min(4)->max(255)),
+            ],
+            'password' => [
+                new RequiredHtmlOptions(Required::rule()),
+                new HasLengthHtmlOptions(HasLength::rule()->min(6)->max(255)),
+                Callback::rule(function ($value) {
+                    $result = new Result();
+
+                    if ($this->getIdentity() === null) {
+                        $result->addError('Invalid login or password.');
+                    }
+
+                    return $result;
+                }),
+            ],
+        ];
+    }
+
+    /**
+     * @return IdentityInterface|null
+     */
+    public function getIdentity(): ?IdentityInterface
+    {
+        $identity = $this->userRepo->findByLogin($this->login);
+        if ($identity !== null && $identity->validatePassword($this->password)) {
+            return $identity;
+        }
+
+        return null;
+    }
+
 }

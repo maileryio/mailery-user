@@ -8,9 +8,12 @@ use Psr\Http\Message\ResponseFactoryInterface as ResponseFactory;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Yiisoft\Http\Method;
+use Yiisoft\Http\Status;
+use Yiisoft\Http\Header;
 use Yiisoft\Router\UrlGeneratorInterface as UrlGenerator;
 use Yiisoft\Yii\View\ViewRenderer;
 use Yiisoft\User\CurrentUser;
+use Yiisoft\Validator\ValidatorInterface;
 
 class AuthController
 {
@@ -25,12 +28,26 @@ class AuthController
     private ResponseFactory $responseFactory;
 
     /**
+     * @var UrlGenerator
+     */
+    private UrlGenerator $urlGenerator;
+
+    /**
+     * @var CurrentUser
+     */
+    private CurrentUser $currentUser;
+
+    /**
      * @param ViewRenderer $viewRenderer
      * @param ResponseFactory $responseFactory
+     * @param UrlGenerator $urlGenerator
+     * @param CurrentUser $currentUser
      */
     public function __construct(
         ViewRenderer $viewRenderer,
-        ResponseFactory $responseFactory
+        ResponseFactory $responseFactory,
+        UrlGenerator $urlGenerator,
+        CurrentUser $currentUser
     ) {
         $this->viewRenderer = $viewRenderer
             ->withController($this)
@@ -38,53 +55,44 @@ class AuthController
             ->withLayout('@views/layout/guest');
 
         $this->responseFactory = $responseFactory;
+        $this->urlGenerator = $urlGenerator;
+        $this->currentUser = $currentUser;
     }
 
     /**
      * @param Request $request
-     * @param LoginForm $loginForm
-     * @param UrlGenerator $urlGenerator
+     * @patram ValidatorInterface $validator
+     * @param LoginForm $form
      * @return Response
      */
-    public function login(Request $request, LoginForm $loginForm, UrlGenerator $urlGenerator): Response
+    public function login(Request $request, ValidatorInterface $validator, LoginForm $form): Response
     {
-        $loginForm
-            ->setAttributes([
-                'action' => $request->getUri()->getPath(),
-                'method' => 'post',
-                'enctype' => 'multipart/form-data',
-            ])
-        ;
+        $body = $request->getParsedBody();
 
-        $submitted = $request->getMethod() === Method::POST;
+        if (($request->getMethod() === Method::POST) && $form->load($body) && $validator->validate($form)->isValid()) {
+            $identity = $form->getIdentity();
 
-        if ($submitted) {
-            $loginForm->loadFromServerRequest($request);
-
-            if (($user = $loginForm->login()) !== null) {
+            if ($this->currentUser->login($identity)) {
                 return $this->responseFactory
-                    ->createResponse(302)
-                    ->withHeader('Location', $urlGenerator->generate('/brand/default/index'));
+                    ->createResponse(Status::FOUND)
+                    ->withHeader(Header::LOCATION, $this->urlGenerator->generate('/brand/default/index'));
             }
+
+            $form->addError('login', 'Unable to login.');
         }
 
-        return $this->viewRenderer->render('login', compact('loginForm', 'submitted'));
+        return $this->viewRenderer->render('login', compact('form'));
     }
 
     /**
-     * @param CurrentUser $user
-     * @param UrlGenerator $urlGenerator
      * @return Response
      */
-    public function logout(CurrentUser $user, UrlGenerator $urlGenerator): Response
+    public function logout(): Response
     {
-        $user->logout();
+        $this->currentUser->logout();
 
         return $this->responseFactory
-            ->createResponse(302)
-            ->withHeader(
-                'Location',
-                $urlGenerator->generate('/brand/default/index')
-            );
+            ->createResponse(Status::FOUND)
+            ->withHeader(Header::LOCATION, $this->urlGenerator->generate('/brand/default/index'));
     }
 }

@@ -48,12 +48,11 @@ class UserValueObject
     public static function fromForm(UserForm $form): self
     {
         $new = new self();
-
-        $new->email = $form['email']->getValue();
-        $new->username = $form['username']->getValue();
-        $new->password = $form['password']->getValue();
-        $new->role = $form['role']->getValue();
-        $new->status = $form['status']->getValue();
+        $new->email = $form->getEmail();
+        $new->username = $form->getUsername();
+        $new->password = $form->getPassword();
+        $new->role = $form->getRole();
+        $new->status = $form->getStatus();
 
         return $new;
     }

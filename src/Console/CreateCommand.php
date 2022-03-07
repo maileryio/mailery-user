@@ -12,14 +12,26 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Yiisoft\Yii\Console\ExitCode;
-use FormManager\Inputs\Input as FormInput;
+use Yiisoft\Validator\ValidatorInterface;
+use Mailery\User\Service\UserCrudService;
+use Mailery\User\ValueObject\UserValueObject;
 
 class CreateCommand extends Command
 {
     /**
      * @var UserForm
      */
-    private UserForm $userForm;
+    private UserForm $form;
+
+    /**
+     * @var ValidatorInterface
+     */
+    private ValidatorInterface $validator;
+
+    /**
+     * @var UserCrudService
+     */
+    private UserCrudService $userCrudService;
 
     /**
      * @var string
@@ -27,11 +39,19 @@ class CreateCommand extends Command
     protected static $defaultName = 'user/create';
 
     /**
-     * @param UserForm $userForm
+     * @param UserForm $form
+     * @param ValidatorInterface $validator
+     * @param UserCrudService $userCrudService
      */
-    public function __construct(UserForm $userForm)
-    {
-        $this->userForm = $userForm;
+    public function __construct(
+        UserForm $form,
+        ValidatorInterface $validator,
+        UserCrudService $userCrudService
+    ) {
+        $this->form = $form;
+        $this->validator = $validator;
+        $this->userCrudService = $userCrudService;
+
         parent::__construct();
     }
 
@@ -40,8 +60,8 @@ class CreateCommand extends Command
      */
     public function configure(): void
     {
-        $statuses = array_keys($this->userForm->getStatusOptions());
-        $roles = array_keys($this->userForm->getRoleOptions());
+        $statuses = array_keys($this->form->getStatusListOptions());
+        $roles = array_keys($this->form->getRoleListOptions());
 
         $this
             ->setDescription('Creates a user')
@@ -63,40 +83,33 @@ class CreateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $email = $input->getArgument('email');
-        $username = $input->getArgument('username');
-        $password = $input->getArgument('password');
-        $status = $input->getArgument('status') ?? User::STATUS_ACTIVE;
-        $role = $input->getArgument('role') ?? Rbac::ROLE_ADMIN;
-
-        $this->userForm->setValue([
-            'email' => $email,
-            'username' => $username,
-            'password' => $password,
-            'confirmPassword' => $password,
-            'status' => $status,
-            'role' => $role,
-        ]);
+        $data = [
+            'email' => $input->getArgument('email'),
+            'username' => $input->getArgument('username'),
+            'password' => $input->getArgument('password'),
+            'confirmPassword' => $input->getArgument('password'),
+            'status' => $input->getArgument('status') ?? User::STATUS_ACTIVE,
+            'role' => $input->getArgument('role') ?? Rbac::ROLE_ADMIN,
+        ];
 
         try {
-            if (($user = $this->userForm->save()) === null) {
-                foreach ($this->userForm as $input) {
-                    /** @var FormInput $input */
-                    if (($error = $input->getError()) === null) {
-                        continue;
-                    }
+            if ($this->form->load($data, '') && $this->validator->validate($this->form)->isValid()) {
+                $valueObject = UserValueObject::fromForm($this->form);
+                $user = $this->userCrudService->create($valueObject);
+            } else {
+                foreach ($this->form->getErrors() as $attribute => $error) {
                     throw new \RuntimeException(
                         sprintf(
                             "Failed validation\n - field: %s\n - value: %s\n - error: %s",
-                            $input->getAttribute('name'),
-                            $input->getValue(),
-                            $error
+                            $attribute,
+                            $this->form->getAttributeValue($attribute),
+                            $this->form->getFirstError($attribute)
                         )
                     );
                 }
             }
 
-            $io->success('User created');
+            $io->success(sprintf('User created with ID: %d', $user->getId()));
         } catch (\Throwable $t) {
             $io->error($t->getMessage());
             return $t->getCode() ?: ExitCode::UNSPECIFIED_ERROR;

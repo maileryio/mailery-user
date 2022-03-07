@@ -13,12 +13,12 @@ declare(strict_types=1);
 namespace Mailery\User\Service;
 
 use Cycle\ORM\ORMInterface;
-use Cycle\ORM\Transaction;
 use Mailery\User\Entity\User;
 use Mailery\User\ValueObject\UserValueObject;
 use Mailery\User\Repository\UserRepository;
 use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\StorageInterface;
+use Yiisoft\Yii\Cycle\Data\Writer\EntityWriter;
 
 class UserCrudService
 {
@@ -73,9 +73,7 @@ class UserCrudService
             ->setStatus($valueObject->getStatus())
         ;
 
-        $tr = new Transaction($this->orm);
-        $tr->persist($user);
-        $tr->run();
+        (new EntityWriter($this->orm))->write([$user]);
 
         $role = $this->storage->getRoleByName($valueObject->getRole());
         $this->manager->assign($role, $user->getId());
@@ -97,9 +95,7 @@ class UserCrudService
             ->setStatus($valueObject->getStatus())
         ;
 
-        $tr = new Transaction($this->orm);
-        $tr->persist($user);
-        $tr->run();
+        (new EntityWriter($this->orm))->write([$user]);
 
         foreach ($this->manager->getRolesByUser($user->getId()) as $userRole) {
             $this->manager->revoke($userRole, $user->getId());
@@ -117,9 +113,7 @@ class UserCrudService
      */
     public function delete(User $user): bool
     {
-        $tr = new Transaction($this->orm);
-        $tr->delete($user);
-        $tr->run();
+        (new EntityWriter($this->orm))->delete([$user]);
 
         return true;
     }
