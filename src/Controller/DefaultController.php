@@ -119,7 +119,7 @@ class DefaultController
     {
         $userId = $request->getAttribute('id');
         if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
-            return $this->responseFactory->createResponse(404);
+            return $this->responseFactory->createResponse(Status::NOT_FOUND);
         }
 
         return $this->viewRenderer->render('view', compact('user'));
@@ -159,7 +159,7 @@ class DefaultController
         $body = $request->getParsedBody();
         $userId = $request->getAttribute('id');
         if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
-            return $this->responseFactory->createResponse(404);
+            return $this->responseFactory->createResponse(Status::NOT_FOUND);
         }
 
         $form = $form->withEntity($user);
@@ -184,13 +184,13 @@ class DefaultController
     {
         $userId = $request->getAttribute('id');
         if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
-            return $this->responseFactory->createResponse(404);
+            return $this->responseFactory->createResponse(Status::NOT_FOUND);
         }
 
         $this->userCrudService->delete($user);
 
         return $this->responseFactory
-            ->createResponse(302)
+            ->createResponse(Status::SEE_OTHER)
             ->withHeader(Header::LOCATION, $this->urlGenerator->generate('/user/default/index'));
     }
 }

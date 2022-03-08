@@ -8,7 +8,7 @@ use Mailery\Widget\Link\Link;
 
 /** @var Yiisoft\Yii\WebView $this */
 /** @var Psr\Http\Message\ServerRequestInterface $request */
-/** @var \Mailery\User\Entity\User $user */
+/** @var Mailery\User\Entity\User $user */
 /** @var string $csrf */
 /** @var bool $submitted */
 
