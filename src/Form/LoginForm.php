@@ -14,9 +14,7 @@ namespace Mailery\User\Form;
 
 use Mailery\User\Repository\UserRepository;
 use Yiisoft\Auth\IdentityInterface;
-use Yiisoft\Form\HtmlOptions\RequiredHtmlOptions;
 use Yiisoft\Validator\Rule\Required;
-use Yiisoft\Form\HtmlOptions\HasLengthHtmlOptions;
 use Yiisoft\Validator\Rule\HasLength;
 use Yiisoft\Form\FormModel;
 use Yiisoft\Validator\Rule\Callback;
@@ -68,12 +66,12 @@ class LoginForm extends FormModel
     {
         return [
             'login' => [
-                new RequiredHtmlOptions(Required::rule()),
-                new HasLengthHtmlOptions(HasLength::rule()->min(4)->max(255)),
+                Required::rule(),
+                HasLength::rule()->min(4)->max(255),
             ],
             'password' => [
-                new RequiredHtmlOptions(Required::rule()),
-                new HasLengthHtmlOptions(HasLength::rule()->min(6)->max(255)),
+                Required::rule(),
+                HasLength::rule()->min(6)->max(255),
                 Callback::rule(function ($value) {
                     $result = new Result();
 

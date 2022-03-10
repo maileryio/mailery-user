@@ -1,11 +1,10 @@
 <?php
 
-use Yiisoft\Html\Html;
 use Yiisoft\Form\Widget\Form;
 
 /** @var Yiisoft\Form\Widget\Field $field */
 /** @var Yiisoft\View\WebView $this */
-/** @var Mailery\User\Form\UserForm $form */
+/** @var Yiisoft\Form\FormModelInterface $form */
 /** @var string $csrf */
 
 ?>
@@ -14,27 +13,18 @@ use Yiisoft\Form\Widget\Form;
 <div class="row">
     <div class="col-6 offset-3">
         <?= Form::widget()
-            ->options(
-                [
-                    'id' => 'form-login',
-                    'csrf' => $csrf,
-                    'enctype' => 'multipart/form-data',
-                ]
-            )
-            ->begin(); ?>
+                ->csrf($csrf)
+                ->id('login-form')
+                ->begin(); ?>
 
-        <?= $field->config($form, 'login'); ?>
+        <?= $field->text($form, 'login')
+                ->autofocus(); ?>
 
-        <?= $field->config($form, 'password')
-                ->passwordInput();
-        ?>
+        <?= $field->password($form, 'password'); ?>
 
-        <?= Html::submitButton(
-            'Login',
-            [
-                'class' => 'btn btn-primary float-right mt-2',
-            ]
-        ); ?>
+        <?= $field->submitButton()
+                ->class('btn btn-primary float-right mt-2')
+                ->value('Login'); ?>
 
         <?= Form::end(); ?>
     </div>

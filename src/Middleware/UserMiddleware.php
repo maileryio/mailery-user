@@ -10,7 +10,7 @@ use Yiisoft\User\CurrentUser;
 use Mailery\User\Entity\User as UserEntity;
 use Mailery\User\Service\CurrentUserService;
 
-class CurrentUserMiddleware implements MiddlewareInterface
+class UserMiddleware implements MiddlewareInterface
 {
     /**
      * @var CurrentUser

@@ -17,14 +17,16 @@ use Mailery\Common\Entity\RoutableEntityInterface;
 use Mailery\Activity\Log\Entity\LoggableEntityTrait;
 use Mailery\Activity\Log\Entity\LoggableEntityInterface;
 use Yiisoft\Security\PasswordHasher;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\Annotated\Annotation\Column;
+use Mailery\User\Repository\UserRepository;
+use Mailery\User\Mapper\DefaultMapper;
 
-/**
- * @Cycle\Annotated\Annotation\Entity(
- *      table = "users",
- *      repository = "Mailery\User\Repository\UserRepository",
- *      mapper = "Mailery\User\Mapper\DefaultMapper"
- * )
- */
+#[Entity(
+    table: 'users',
+    repository: UserRepository::class,
+    mapper: DefaultMapper::class
+)]
 class User implements IdentityInterface, RoutableEntityInterface, LoggableEntityInterface
 {
     use LoggableEntityTrait;
@@ -32,33 +34,20 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     const STATUS_ACTIVE = 'active';
     const STATUS_DISABLED = 'disabled';
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "primary")
-     * @var int|null
-     */
-    private $id;
+    #[Column(type: 'primary')]
+    private int $id;
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "string(255)")
-     * @var string
-     */
-    private $email;
+    #[Column(type: 'string(255)')]
+    private string $email;
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "string(255)")
-     * @var string
-     */
-    private $username;
+    #[Column(type: 'string(255)')]
+    private string $username;
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "string(255)")
-     */
-    private $password;
+    #[Column(type: 'string(255)')]
+    private string $password;
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "enum(active, disabled)", default = "active")
-     */
-    private $status = 'active';
+    #[Column(type: 'enum(active, disabled)', default: 'active')]
+    private string $status = 'active';
 
     /**
      * @return string

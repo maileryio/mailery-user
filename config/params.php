@@ -16,10 +16,6 @@ use Mailery\User\Console\AssignRoleCommand;
 use Mailery\Menu\MenuItem;
 
 return [
-    'yiisoft/user' => [
-        'authUrl' => '/user/login',
-    ],
-
     'yiisoft/yii-console' => [
         'commands' => [
             'user/create' => CreateCommand::class,
@@ -28,7 +24,7 @@ return [
     ],
 
     'yiisoft/yii-cycle' => [
-        'annotated-entity-paths' => [
+        'entity-paths' => [
             '@vendor/maileryio/mailery-user/src/Entity',
         ],
     ],

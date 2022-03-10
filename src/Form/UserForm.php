@@ -16,12 +16,9 @@ use Mailery\User\Entity\User;
 use Mailery\User\Repository\UserRepository;
 use Yiisoft\Rbac\StorageInterface;
 use Yiisoft\Rbac\Role;
-use Yiisoft\Form\HtmlOptions\RequiredHtmlOptions;
 use Yiisoft\Validator\Rule\Required;
-use Yiisoft\Form\HtmlOptions\HasLengthHtmlOptions;
 use Yiisoft\Validator\Rule\HasLength;
 use Yiisoft\Validator\Rule\Email;
-use Yiisoft\Form\HtmlOptions\EmailHtmlOptions;
 use Yiisoft\Form\FormModel;
 use Yiisoft\Validator\Rule\MatchRegularExpression;
 use Yiisoft\Validator\Rule\InRange;
@@ -167,9 +164,9 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     {
         return [
             'email' => [
-                new RequiredHtmlOptions(Required::rule()),
-                new EmailHtmlOptions(Email::rule()),
-                new HasLengthHtmlOptions(HasLength::rule()->max(255)),
+                Required::rule(),
+                Email::rule(),
+                HasLength::rule()->max(255),
                 Callback::rule(function ($value) {
                     $result = new Result();
                     $record = $this->userRepo->findByEmail($value, $this->user);
@@ -182,8 +179,8 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
                 }),
             ],
             'username' => [
-                new RequiredHtmlOptions(Required::rule()),
-                new HasLengthHtmlOptions(HasLength::rule()->min(4)->max(255)),
+                Required::rule(),
+                HasLength::rule()->min(4)->max(255),
                 MatchRegularExpression::rule('/^[a-zA-Z0-9]+$/i'),
                 Callback::rule(function ($value) {
                     $result = new Result();
@@ -197,12 +194,12 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
                 }),
             ],
             'password' => [
-                new RequiredHtmlOptions(Required::rule()),
-                new HasLengthHtmlOptions(HasLength::rule()->min(6)->max(255)),
+                Required::rule(),
+                HasLength::rule()->min(6)->max(255),
             ],
             'confirmPassword' => [
-                new RequiredHtmlOptions(Required::rule()),
-                new HasLengthHtmlOptions(HasLength::rule()->min(6)->max(255)),
+                Required::rule(),
+                HasLength::rule()->min(6)->max(255),
                 Callback::rule(function ($value) {
                     $result = new Result();
 
@@ -214,11 +211,11 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
                 }),
             ],
             'role' => [
-                new RequiredHtmlOptions(Required::rule()),
+                Required::rule(),
                 InRange::rule(array_keys($this->getRoleListOptions())),
             ],
             'status' => [
-                new RequiredHtmlOptions(Required::rule()),
+                Required::rule(),
                 InRange::rule(array_keys($this->getStatusListOptions())),
             ],
         ];
