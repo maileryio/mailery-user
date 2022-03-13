@@ -38,7 +38,7 @@ return [
                             return 'Users';
                         },
                         'url' => static function (UrlGeneratorInterface $urlGenerator) {
-                            return $urlGenerator->generate('/user/default/index');
+                            return strtok($urlGenerator->generate('/user/default/index'), '?');
                         },
                     ],
                 ],
@@ -69,7 +69,7 @@ return [
                             return 'Logout';
                         },
                         'url' => static function (UrlGeneratorInterface $urlGenerator) {
-                            return $urlGenerator->generate('/user/auth/logout');
+                            return strtok($urlGenerator->generate('/user/auth/logout'), '?');
                         },
                         'method' => MenuItem::METHOD_POST,
                     ],

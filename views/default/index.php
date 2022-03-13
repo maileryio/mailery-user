@@ -2,7 +2,6 @@
 
 use Mailery\Icon\Icon;
 use Mailery\Activity\Log\Widget\ActivityLogLink;
-use Mailery\User\Module;
 use Mailery\User\Entity\User;
 use Mailery\Widget\Dataview\Columns\ActionColumn;
 use Mailery\Widget\Dataview\Columns\DataColumn;
@@ -33,7 +32,7 @@ $this->setTitle('All users');
                     <?= ActivityLogLink::widget()
                         ->tag('b-dropdown-item')
                         ->label('Activity log')
-                        ->module(Module::NAME); ?>
+                        ->group('user'); ?>
                 </b-dropdown>
                 <a class="btn btn-sm btn-primary mx-sm-1 mb-2" href="<?= $urlGenerator->generate('/user/default/create'); ?>">
                     <?= Icon::widget()->name('plus')->options(['class' => 'mr-1']); ?>

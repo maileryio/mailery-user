@@ -62,7 +62,11 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
      */
     public function getId(): ?string
     {
-        return $this->id ? (string) $this->id : null;
+        if ($this->id === null) {
+            return null;
+        }
+
+        return (string) $this->id;
     }
 
     /**
