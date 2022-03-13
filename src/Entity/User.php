@@ -46,8 +46,8 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     #[Column(type: 'string(255)')]
     private string $password;
 
-    #[Column(type: 'enum(active, disabled)', default: 'active')]
-    private string $status = 'active';
+    #[Column(type: 'enum(active, disabled)')]
+    private string $status;
 
     /**
      * @return string
