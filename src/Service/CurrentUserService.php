@@ -13,17 +13,11 @@ class CurrentUserService
     private ?User $user = null;
 
     /**
-     * @var UserRepository
-     */
-    private UserRepository $userRepo;
-
-    /**
      * @param UserRepository $userRepo
      */
-    public function __construct(UserRepository $userRepo)
-    {
-        $this->userRepo = $userRepo;
-    }
+    public function __construct(
+        private UserRepository $userRepo
+    ) {}
 
     /**
      * @return User

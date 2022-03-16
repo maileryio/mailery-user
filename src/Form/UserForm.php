@@ -14,7 +14,7 @@ namespace Mailery\User\Form;
 
 use Mailery\User\Entity\User;
 use Mailery\User\Repository\UserRepository;
-use Yiisoft\Rbac\StorageInterface;
+use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Validator\Rule\Required;
 use Yiisoft\Validator\Rule\HasLength;
@@ -64,26 +64,13 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     private ?User $user = null;
 
     /**
-     * @var UserRepository
-     */
-    private UserRepository $userRepo;
-
-    /**
-     * @var StorageInterface
-     */
-    private StorageInterface $storage;
-
-    /**
      * @param UserRepository $userRepo
-     * @param StorageInterface $storage
+     * @param ItemsStorageInterface $itemsStorage
      */
     public function __construct(
-        UserRepository $userRepo,
-        StorageInterface $storage
+        private UserRepository $userRepo,
+        private ItemsStorageInterface $itemsStorage
     ) {
-        $this->userRepo = $userRepo;
-        $this->storage = $storage;
-
         parent::__construct();
     }
 
@@ -227,7 +214,7 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     public function getRoleListOptions(): array
     {
         $roles = [];
-        foreach ($this->storage->getRoles() as $role) {
+        foreach ($this->itemsStorage->getRoles() as $role) {
             /** @var Role $role */
             $roles[$role->getName()] = $role->getName();
         }

@@ -14,6 +14,8 @@ use Yiisoft\Router\UrlGeneratorInterface;
 use Mailery\User\Console\CreateCommand;
 use Mailery\User\Console\AssignRoleCommand;
 use Mailery\Menu\MenuItem;
+use Yiisoft\Definitions\DynamicReference;
+use Mailery\User\Entity\User;
 
 return [
     'yiisoft/yii-console' => [
@@ -26,6 +28,17 @@ return [
     'yiisoft/yii-cycle' => [
         'entity-paths' => [
             '@vendor/maileryio/mailery-user/src/Entity',
+        ],
+    ],
+
+    'maileryio/mailery-activity-log' => [
+        'entity-groups' => [
+            'user' => [
+                'label' => DynamicReference::to(static fn () => 'User'),
+                'entities' => [
+                    User::class,
+                ],
+            ],
         ],
     ],
 

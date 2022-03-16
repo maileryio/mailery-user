@@ -19,21 +19,6 @@ use Mailery\User\ValueObject\UserValueObject;
 class CreateCommand extends Command
 {
     /**
-     * @var UserForm
-     */
-    private UserForm $form;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private ValidatorInterface $validator;
-
-    /**
-     * @var UserCrudService
-     */
-    private UserCrudService $userCrudService;
-
-    /**
      * @var string
      */
     protected static $defaultName = 'user/create';
@@ -44,14 +29,10 @@ class CreateCommand extends Command
      * @param UserCrudService $userCrudService
      */
     public function __construct(
-        UserForm $form,
-        ValidatorInterface $validator,
-        UserCrudService $userCrudService
+        private UserForm $form,
+        private ValidatorInterface $validator,
+        private UserCrudService $userCrudService
     ) {
-        $this->form = $form;
-        $this->validator = $validator;
-        $this->userCrudService = $userCrudService;
-
         parent::__construct();
     }
 

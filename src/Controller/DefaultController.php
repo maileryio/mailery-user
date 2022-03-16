@@ -27,40 +27,12 @@ use Psr\Http\Message\ResponseFactoryInterface as ResponseFactory;
 use Mailery\User\ValueObject\UserValueObject;
 use Yiisoft\Validator\ValidatorInterface;
 use Yiisoft\Session\Flash\FlashInterface;
+use Yiisoft\Router\CurrentRoute;
+use Yiisoft\User\CurrentUser;
 
 class DefaultController
 {
     private const PAGINATION_INDEX = 10;
-
-    /**
-     * @var ViewRenderer
-     */
-    private ViewRenderer $viewRenderer;
-
-    /**
-     * @var ResponseFactory
-     */
-    private ResponseFactory $responseFactory;
-
-    /**
-     * @var UrlGenerator
-     */
-    private UrlGenerator $urlGenerator;
-
-    /**
-     * @var UserRepository
-     */
-    private UserRepository $userRepo;
-
-    /**
-     * @var UserService
-     */
-    private UserService $userService;
-
-    /**
-     * @var UserCrudService
-     */
-    private UserCrudService $userCrudService;
 
     /**
      * @param ViewRenderer $viewRenderer
@@ -71,22 +43,16 @@ class DefaultController
      * @param UserCrudService $userCrudService
      */
     public function __construct(
-        ViewRenderer $viewRenderer,
-        ResponseFactory $responseFactory,
-        UrlGenerator $urlGenerator,
-        UserRepository $userRepo,
-        UserService $userService,
-        UserCrudService $userCrudService
+        private ViewRenderer $viewRenderer,
+        private ResponseFactory $responseFactory,
+        private UrlGenerator $urlGenerator,
+        private UserRepository $userRepo,
+        private UserService $userService,
+        private UserCrudService $userCrudService
     ) {
         $this->viewRenderer = $viewRenderer
             ->withController($this)
             ->withViewPath(dirname(dirname(__DIR__)) . '/views');
-
-        $this->responseFactory = $responseFactory;
-        $this->urlGenerator = $urlGenerator;
-        $this->userRepo = $userRepo;
-        $this->userService = $userService;
-        $this->userCrudService = $userCrudService;
     }
 
     /**
@@ -112,12 +78,12 @@ class DefaultController
     }
 
     /**
-     * @param Request $request
+     * @param CurrentRoute $currentRoute
      * @return Response
      */
-    public function view(Request $request): Response
+    public function view(CurrentRoute $currentRoute): Response
     {
-        $userId = $request->getAttribute('id');
+        $userId = $currentRoute->getArgument('id');
         if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
             return $this->responseFactory->createResponse(Status::NOT_FOUND);
         }
@@ -149,15 +115,16 @@ class DefaultController
 
     /**
      * @param Request $request
+     * @param CurrentRoute $currentRoute
      * @param ValidatorInterface $validator
      * @param FlashInterface $flash
      * @param UserForm $form
      * @return Response
      */
-    public function edit(Request $request, ValidatorInterface $validator, FlashInterface $flash, UserForm $form): Response
+    public function edit(Request $request, CurrentRoute $currentRoute, ValidatorInterface $validator, FlashInterface $flash, UserForm $form): Response
     {
         $body = $request->getParsedBody();
-        $userId = $request->getAttribute('id');
+        $userId = $currentRoute->getArgument('id');
         if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
             return $this->responseFactory->createResponse(Status::NOT_FOUND);
         }
@@ -177,14 +144,19 @@ class DefaultController
     }
 
     /**
-     * @param Request $request
+     * @param CurrentRoute $currentRoute
+     * @param CurrentUser $currentUser
      * @return Response
      */
-    public function delete(Request $request): Response
+    public function delete(CurrentRoute $currentRoute, CurrentUser $currentUser): Response
     {
-        $userId = $request->getAttribute('id');
+        $userId = $currentRoute->getArgument('id');
         if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
             return $this->responseFactory->createResponse(Status::NOT_FOUND);
+        }
+
+        if ($currentUser->getId() === $user->getId()) {
+            return $this->responseFactory->createResponse(Status::FORBIDDEN);
         }
 
         $this->userCrudService->delete($user);

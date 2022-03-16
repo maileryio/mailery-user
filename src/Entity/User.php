@@ -20,12 +20,21 @@ use Yiisoft\Security\PasswordHasher;
 use Cycle\Annotated\Annotation\Entity;
 use Cycle\Annotated\Annotation\Column;
 use Mailery\User\Repository\UserRepository;
-use Mailery\User\Mapper\DefaultMapper;
+use Cycle\ORM\Entity\Behavior;
+use Mailery\Activity\Log\Mapper\LoggableMapper;
 
 #[Entity(
     table: 'users',
     repository: UserRepository::class,
-    mapper: DefaultMapper::class
+    mapper: LoggableMapper::class
+)]
+#[Behavior\CreatedAt(
+    field: 'createdAt',
+    column: 'created_at'
+)]
+#[Behavior\UpdatedAt(
+    field: 'updatedAt',
+    column: 'updated_at'
 )]
 class User implements IdentityInterface, RoutableEntityInterface, LoggableEntityInterface
 {
@@ -35,7 +44,7 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     const STATUS_DISABLED = 'disabled';
 
     #[Column(type: 'primary')]
-    private int $id;
+    private ?int $id = null;
 
     #[Column(type: 'string(255)')]
     private string $email;
@@ -48,6 +57,12 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
 
     #[Column(type: 'enum(active, disabled)')]
     private string $status;
+
+    #[Column(type: 'datetime')]
+    private \DateTimeImmutable $createdAt;
+
+    #[Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * @return string

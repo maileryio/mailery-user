@@ -13,27 +13,12 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\Role;
-use Yiisoft\Rbac\StorageInterface;
+use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Yii\Console\ExitCode;
 use Yiisoft\Yii\Cycle\Command\CycleDependencyProxy;
 
 class AssignRoleCommand extends Command
 {
-    /**
-     * @var CycleDependencyProxy
-     */
-    private CycleDependencyProxy $promise;
-
-    /**
-     * @var Manager
-     */
-    private Manager $manager;
-
-    /**
-     * @var StorageInterface
-     */
-    private StorageInterface $storage;
-
     /**
      * @var string
      */
@@ -42,13 +27,13 @@ class AssignRoleCommand extends Command
     /**
      * @param CycleDependencyProxy $promise
      * @param Manager $manager
-     * @param StorageInterface $storage
+     * @param ItemsStorageInterface $itemsStorage
      */
-    public function __construct(CycleDependencyProxy $promise, Manager $manager, StorageInterface $storage)
-    {
-        $this->promise = $promise;
-        $this->manager = $manager;
-        $this->storage = $storage;
+    public function __construct(
+        private CycleDependencyProxy $promise,
+        private Manager $manager,
+        private ItemsStorageInterface $itemsStorage
+    ) {
         parent::__construct();
     }
 
@@ -85,7 +70,7 @@ class AssignRoleCommand extends Command
                 throw new \Exception('Can\'t find user');
             }
 
-            $role = $this->storage->getRoleByName($roleName);
+            $role = $this->itemsStorage->getRole($roleName);
 
             if (null === $role) {
                 $helper = $this->getHelper('question');
@@ -99,7 +84,7 @@ class AssignRoleCommand extends Command
                 $this->manager->addRole($role);
             }
 
-            $this->manager->assign($role, $user->getId());
+            $this->manager->assign($role->getName(), $user->getId());
 
             $io->success('Role was assigned to given user');
         } catch (\Throwable $t) {

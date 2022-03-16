@@ -13,24 +13,13 @@ use Mailery\User\Service\CurrentUserService;
 class UserMiddleware implements MiddlewareInterface
 {
     /**
-     * @var CurrentUser
-     */
-    private CurrentUser $user;
-
-    /**
-     * @var CurrentUserService
-     */
-    private CurrentUserService $currentUser;
-
-    /**
      * @param CurrentUser $user
      * @param CurrentUserService $currentUser
      */
-    public function __construct(CurrentUser $user, CurrentUserService $currentUser)
-    {
-        $this->user = $user;
-        $this->currentUser = $currentUser;
-    }
+    public function __construct(
+        private CurrentUser $user,
+        private CurrentUserService $currentUser
+    ) {}
 
     /**
      * @param Request $request
