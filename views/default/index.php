@@ -100,8 +100,9 @@ $this->setTitle('All users');
                     ->header('Delete')
                     ->view('')
                     ->update('')
-                    ->delete(function (User $data, int $index) use ($urlGenerator) {
+                    ->delete(function (User $data, int $index) use ($csrf, $urlGenerator) {
                         return Link::widget()
+                            ->csrf($csrf)
                             ->label(Icon::widget()->name('delete')->options(['class' => 'mr-1'])->render())
                             ->method('delete')
                             ->href($urlGenerator->generate('/user/default/delete', ['id' => $data->getId()]))

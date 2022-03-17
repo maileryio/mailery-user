@@ -20,6 +20,7 @@ $this->setTitle($user->getUsername());
             <h1 class="h3">User #<?= $user->getId(); ?></h1>
             <div class="btn-toolbar float-right">
                 <?= Link::widget()
+                    ->csrf($csrf)
                     ->label(Icon::widget()->name('delete')->options(['class' => 'mr-1'])->render() . ' Delete')
                     ->method('delete')
                     ->href($urlGenerator->generate('/user/default/delete', ['id' => $user->getId()]))
