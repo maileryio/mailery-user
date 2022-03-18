@@ -44,7 +44,7 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     const STATUS_DISABLED = 'disabled';
 
     #[Column(type: 'primary')]
-    private ?int $id = null;
+    private int $id;
 
     #[Column(type: 'string(255)')]
     private string $email;
@@ -73,14 +73,10 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getId(): ?string
+    public function getId(): string
     {
-        if ($this->id === null) {
-            return null;
-        }
-
         return (string) $this->id;
     }
 
