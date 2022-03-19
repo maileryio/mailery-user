@@ -17,8 +17,7 @@ use Yiisoft\Form\Widget\Form;
                 ->id('login-form')
                 ->begin(); ?>
 
-        <?= $field->text($form, 'login')
-                ->autofocus(); ?>
+        <?= $field->text($form, 'login')->autofocus(); ?>
 
         <?= $field->password($form, 'password'); ?>
 

@@ -15,8 +15,7 @@ use Yiisoft\Form\Widget\Form;
                 ->id('user-form')
                 ->begin(); ?>
 
-        <?= $field->email($form, 'email')
-                ->autofocus(); ?>
+        <?= $field->email($form, 'email')->autofocus(); ?>
 
         <?= $field->text($form, 'username'); ?>
 
