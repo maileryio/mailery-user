@@ -23,14 +23,14 @@ $this->setTitle($user->getUsername());
                     ->csrf($csrf)
                     ->label(Icon::widget()->name('delete')->options(['class' => 'mr-1'])->render() . ' Delete')
                     ->method('delete')
-                    ->href($urlGenerator->generate('/user/default/delete', ['id' => $user->getId()]))
+                    ->href($url->generate('/user/default/delete', ['id' => $user->getId()]))
                     ->confirm('Are you sure?')
                     ->options([
                         'class' => 'btn btn-sm btn-danger mx-sm-1 mb-2',
                     ])
                     ->encode(false);
                 ?>
-                <a class="btn btn-sm btn-secondary mx-sm-1 mb-2" href="<?= $urlGenerator->generate('/user/default/edit', ['id' => $user->getId()]); ?>">
+                <a class="btn btn-sm btn-secondary mx-sm-1 mb-2" href="<?= $url->generate('/user/default/edit', ['id' => $user->getId()]); ?>">
                     <?= Icon::widget()->name('pencil')->options(['class' => 'mr-1']); ?>
                     Update
                 </a>
@@ -44,7 +44,7 @@ $this->setTitle($user->getUsername());
                         ->entity($user); ?>
                 </b-dropdown>
                 <div class="btn-toolbar float-right">
-                    <a class="btn btn-sm btn-outline-secondary mx-sm-1 mb-2" href="<?= $urlGenerator->generate('/user/default/index'); ?>">
+                    <a class="btn btn-sm btn-outline-secondary mx-sm-1 mb-2" href="<?= $url->generate('/user/default/index'); ?>">
                         Back
                     </a>
                 </div>

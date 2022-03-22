@@ -3,19 +3,15 @@
 use Mailery\Icon\Icon;
 use Mailery\Activity\Log\Widget\ActivityLogLink;
 use Mailery\User\Entity\User;
-use Mailery\Widget\Dataview\Columns\ActionColumn;
-use Mailery\Widget\Dataview\Columns\DataColumn;
-use Mailery\Widget\Dataview\GridView;
-use Mailery\Widget\Dataview\GridView\LinkPager;
 use Mailery\Widget\Link\Link;
 use Mailery\Widget\Search\Widget\SearchWidget;
 use Yiisoft\Html\Html;
+use Yiisoft\Yii\DataView\GridView;
 
 /** @var Yiisoft\Yii\WebView $this */
 /** @var Mailery\Widget\Search\Form\SearchForm $searchForm */
 /** @var Yiisoft\Aliases\Aliases $aliases */
-/** @var Yiisoft\Router\UrlGeneratorInterface $urlGenerator */
-/** @var Yiisoft\Data\Reader\DataReaderInterface $dataReader*/
+/** @var Yiisoft\Router\UrlGeneratorInterface $url */
 /** @var Yiisoft\Data\Paginator\PaginatorInterface $paginator */
 $this->setTitle('All users');
 
@@ -34,7 +30,7 @@ $this->setTitle('All users');
                         ->label('Activity log')
                         ->group('user'); ?>
                 </b-dropdown>
-                <a class="btn btn-sm btn-primary mx-sm-1 mb-2" href="<?= $urlGenerator->generate('/user/default/create'); ?>">
+                <a class="btn btn-sm btn-primary mx-sm-1 mb-2" href="<?= $url->generate('/user/default/create'); ?>">
                     <?= Icon::widget()->name('plus')->options(['class' => 'mr-1']); ?>
                     Add new user
                 </a>
@@ -46,7 +42,7 @@ $this->setTitle('All users');
 <div class="row">
     <div class="col-12">
         <?= GridView::widget()
-            ->paginator($paginator)
+            ->layout("{items}\n<div class=\"mb-4\"></div>\n{summary}\n<div class=\"float-right\">{pager}</div>")
             ->options([
                 'class' => 'table-responsive',
             ])
@@ -57,89 +53,50 @@ $this->setTitle('All users');
             ->emptyTextOptions([
                 'class' => 'text-center text-muted mt-4 mb-4',
             ])
+            ->paginator($paginator)
+            ->currentPage($paginator->getCurrentPage())
             ->columns([
-                (new DataColumn())
-                    ->header('Username')
-                    ->content(function (User $data, int $index) {
-                        return $data->getUsername();
-                    }),
-                (new DataColumn())
-                    ->header('Email')
-                    ->content(function (User $data, int $index) use ($urlGenerator) {
-                        return Html::a(
-                            $data->getEmail(),
-                            $urlGenerator->generate('/user/default/view', ['id' => $data->getId()])
-                        );
-                    }),
-                (new DataColumn())
-                    ->header('Status')
-                    ->content(function (User $data, int $index) {
-                        return $data->getStatus();
-                    }),
-                (new ActionColumn())
-                    ->contentOptions([
-                        'style' => 'width: 80px;',
-                    ])
-                    ->header('Edit')
-                    ->view('')
-                    ->update(function (User $data, int $index) use ($urlGenerator) {
+                [
+                    'label()' => ['Username'],
+                    'value()' => [fn (User $model) => $model->getUsername()],
+                ],
+                [
+                    'label()' => ['Email'],
+                    'value()' => [fn (User $model) => Html::a($model->getEmail(), $url->generate($model->getViewRouteName(), $model->getViewRouteParams()))],
+                ],
+                [
+                    'label()' => ['Status'],
+                    'value()' => [fn (User $model) => $model->getStatus()],
+                ],
+                [
+                    'label()' => ['Edit'],
+                    'value()' => [static function (User $model) use ($url) {
                         return Html::a(
                             Icon::widget()->name('pencil')->render(),
-                            $urlGenerator->generate('/user/default/edit', ['id' => $data->getId()]),
+                            $url->generate($model->getEditRouteName(), $model->getEditRouteParams()),
                             [
                                 'class' => 'text-decoration-none mr-3',
                             ]
                         )
                         ->encode(false);
-                    })
-                    ->delete(''),
-                (new ActionColumn())
-                    ->contentOptions([
-                        'style' => 'width: 80px;',
-                    ])
-                    ->header('Delete')
-                    ->view('')
-                    ->update('')
-                    ->delete(function (User $data, int $index) use ($csrf, $urlGenerator) {
+                    }],
+                ],
+                [
+                    'label()' => ['Delete'],
+                    'value()' => [static function (User $model) use ($csrf, $url) {
                         return Link::widget()
                             ->csrf($csrf)
                             ->label(Icon::widget()->name('delete')->options(['class' => 'mr-1'])->render())
                             ->method('delete')
-                            ->href($urlGenerator->generate('/user/default/delete', ['id' => $data->getId()]))
+                            ->href($url->generate($model->getDeleteRouteName(), $model->getDeleteRouteParams()))
                             ->confirm('Are you sure?')
                             ->options([
                                 'class' => 'text-decoration-none text-danger',
                             ])
                             ->encode(false);
-                    }),
+                    }],
+                ],
             ]);
         ?>
     </div>
-</div><?php
-if ($paginator->getTotalItems() > 0) {
-            ?><div class="mb-4"></div>
-    <div class="row">
-        <div class="col-6">
-            <?= GridView\OffsetSummary::widget()
-                ->paginator($paginator); ?>
-        </div>
-        <div class="col-6">
-            <?= LinkPager::widget()
-                ->paginator($paginator)
-                ->options([
-                    'class' => 'float-right',
-                ])
-                ->prevPageLabel('Previous')
-                ->nextPageLabel('Next')
-                ->urlGenerator(function (int $page) use ($urlGenerator) {
-                    $url = $urlGenerator->generate('/user/default/index');
-                    if ($page > 1) {
-                        $url = $url . '?page=' . $page;
-                    }
-
-                    return $url;
-                }); ?>
-        </div>
-    </div><?php
-        }
-?>
+</div>
