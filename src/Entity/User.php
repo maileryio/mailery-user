@@ -26,7 +26,7 @@ use Mailery\Activity\Log\Mapper\LoggableMapper;
 #[Entity(
     table: 'users',
     repository: UserRepository::class,
-    mapper: LoggableMapper::class
+    mapper: LoggableMapper::class,
 )]
 #[Behavior\CreatedAt(
     field: 'createdAt',
