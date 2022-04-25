@@ -1,5 +1,6 @@
 <?php
 
+use Mailery\Widget\Select\Select;
 use Yiisoft\Form\Widget\Form;
 
 /** @var Yiisoft\Form\Widget\Field $field */
@@ -23,9 +24,27 @@ use Yiisoft\Form\Widget\Form;
 
         <?= $field->password($form, 'confirmPassword'); ?>
 
-        <?= $field->select($form, 'role', ['items()' => [$form->getRoleListOptions()]]); ?>
+        <?= $field->select(
+                $form,
+                'role',
+                [
+                    'class' => Select::class,
+                    'items()' => [$form->getRoleListOptions()],
+                    'clearable()' => [false],
+                    'searchable()' => [false],
+                ]
+            ); ?>
 
-        <?= $field->select($form, 'status', ['items()' => [$form->getStatusListOptions()]]); ?>
+        <?= $field->select(
+                $form,
+                'status',
+                [
+                    'class' => Select::class,
+                    'items()' => [$form->getStatusListOptions()],
+                    'clearable()' => [false],
+                    'searchable()' => [false],
+                ]
+            ); ?>
 
         <?= $field->submitButton()
                 ->class('btn btn-primary float-right mt-2')

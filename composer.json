@@ -24,7 +24,8 @@
         "maileryio/mailery-web": "dev-master",
         "maileryio/widget-dataview": "dev-master",
         "maileryio/widget-link": "dev-master",
-        "maileryio/widget-search": "dev-master"
+        "maileryio/widget-search": "dev-master",
+        "maileryio/widget-select": "dev-master"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.16",
