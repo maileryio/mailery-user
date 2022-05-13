@@ -10,7 +10,6 @@ use Mailery\Widget\Link\Link;
 /** @var Psr\Http\Message\ServerRequestInterface $request */
 /** @var Mailery\User\Entity\User $user */
 /** @var Yiisoft\Yii\View\Csrf $csrf */
-/** @var bool $submitted */
 
 $this->setTitle($user->getUsername());
 
