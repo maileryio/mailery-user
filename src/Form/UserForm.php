@@ -15,6 +15,7 @@ namespace Mailery\User\Form;
 use Mailery\User\Entity\User;
 use Mailery\User\Repository\UserRepository;
 use Yiisoft\Rbac\StorageInterface;
+use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Validator\Rule\Required;
 use Yiisoft\Validator\Rule\HasLength;
@@ -23,7 +24,9 @@ use Yiisoft\Form\FormModel;
 use Yiisoft\Validator\Rule\MatchRegularExpression;
 use Yiisoft\Validator\Rule\InRange;
 use Yiisoft\Validator\Rule\Callback;
+use Yiisoft\Validator\Rule\Each;
 use Yiisoft\Validator\Result;
+use Yiisoft\Validator\RuleSet;
 
 class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
 {
@@ -49,9 +52,9 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     private ?string $confirmPassword = null;
 
     /**
-     * @var string|null
+     * @var array
      */
-    private ?string $role = null;
+    private array $roles =[];
 
     /**
      * @var string|null
@@ -65,10 +68,12 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
 
     /**
      * @param UserRepository $userRepo
+     * @param Manager $manager
      * @param StorageInterface $storage
      */
     public function __construct(
         private UserRepository $userRepo,
+        private Manager $manager,
         private StorageInterface $storage
     ) {
         parent::__construct();
@@ -85,8 +90,28 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
         $new->email = $user->getEmail();
         $new->username = $user->getUsername();
         $new->status = $user->getStatus();
+        $new->roles = array_map(
+            fn (Role $role) => $role->getName(),
+            $this->manager->getRolesByUser($user->getId())
+        );
 
         return $new;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function load(array $data, ?string $formName = null): bool
+    {
+        $scope = $formName ?? $this->getFormName();
+
+        if (isset($data[$scope]['roles'])) {
+            $data[$scope]['roles'] = array_filter((array) $data[$scope]['roles']);
+        } else {
+            $data[$scope]['roles'] = [];
+        }
+
+        return parent::load($data, $formName);
     }
 
     /**
@@ -114,11 +139,11 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     }
 
     /**
-     * @return string|null
+     * @return array
      */
-    public function getRole(): ?string
+    public function getRoles(): array
     {
-        return $this->role;
+        return $this->roles;
     }
 
     /**
@@ -139,7 +164,7 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
             'username' => 'Username',
             'password' => 'Password',
             'confirmPassword' => 'Confirm password',
-            'role' => 'Role',
+            'roles' => 'Roles',
             'status' => 'Status',
         ];
     }
@@ -197,9 +222,11 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
                     return $result;
                 }),
             ],
-            'role' => [
+            'roles' => [
                 Required::rule(),
-                InRange::rule(array_keys($this->getRoleListOptions())),
+                Each::rule(new RuleSet([
+                    InRange::rule(array_keys($this->getRoleListOptions())),
+                ]))->message('{error}'),
             ],
             'status' => [
                 Required::rule(),

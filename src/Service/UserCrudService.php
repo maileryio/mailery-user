@@ -16,6 +16,7 @@ use Cycle\ORM\ORMInterface;
 use Mailery\User\Entity\User;
 use Mailery\User\ValueObject\UserValueObject;
 use Yiisoft\Rbac\Manager;
+use Yiisoft\Rbac\StorageInterface;
 use Yiisoft\Yii\Cycle\Data\Writer\EntityWriter;
 
 class UserCrudService
@@ -23,10 +24,12 @@ class UserCrudService
     /**
      * @param ORMInterface $orm
      * @param Manager $manager
+     * @param StorageInterface $storage
      */
     public function __construct(
         private ORMInterface $orm,
-        private Manager $manager
+        private Manager $manager,
+        private StorageInterface $storage
     ) {}
 
     /**
@@ -44,7 +47,11 @@ class UserCrudService
 
         (new EntityWriter($this->orm))->write([$user]);
 
-        $this->manager->assign($valueObject->getRole(), $user->getId());
+        foreach ($valueObject->getRoles() as $roleName) {
+            if (($role = $this->storage->getRoleByName($roleName)) !== null) {
+                $this->manager->assign($role, $user->getId());
+            }
+        }
 
         return $user;
     }
@@ -65,11 +72,15 @@ class UserCrudService
 
         (new EntityWriter($this->orm))->write([$user]);
 
-        foreach ($this->manager->getRolesByUserId($user->getId()) as $role) {
-            $this->manager->revoke($role->getName(), $user->getId());
+        foreach ($this->manager->getRolesByUser($user->getId()) as $role) {
+            $this->manager->revoke($role, $user->getId());
         }
 
-        $this->manager->assign($valueObject->getRole(), $user->getId());
+        foreach ($valueObject->getRoles() as $roleName) {
+            if (($role = $this->storage->getRoleByName($roleName)) !== null) {
+                $this->manager->assign($role, $user->getId());
+            }
+        }
 
         return $user;
     }

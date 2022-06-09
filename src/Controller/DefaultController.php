@@ -135,9 +135,13 @@ class DefaultController
             $valueObject = UserValueObject::fromForm($form);
             $this->userCrudService->update($user, $valueObject);
 
-            return $this->responseFactory
-                ->createResponse(Status::FOUND)
-                ->withHeader(Header::LOCATION, $this->urlGenerator->generate('/user/default/view', ['id' => $user->getId()]));
+            $flash->add(
+                'success',
+                [
+                    'body' => 'Data have been saved!',
+                ],
+                true
+            );
         }
 
         return $this->viewRenderer->render('edit', compact('form', 'user'));

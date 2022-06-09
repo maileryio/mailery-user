@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
-use Mailery\Icon\Icon;
+use Mailery\Web\Widget\FlashMessage;
+use Yiisoft\Yii\Widgets\ContentDecorator;
 
 /** @var Yiisoft\Form\Widget\Field $field */
 /** @var Yiisoft\Yii\WebView $this */
@@ -11,21 +12,25 @@ use Mailery\Icon\Icon;
 
 $this->setTitle('Edit User #' . $user->getId());
 
-?><div class="row">
+?>
+
+<?= ContentDecorator::widget()
+    ->viewFile('@vendor/maileryio/mailery-user/views/default/_layout.php')
+    ->parameters(compact('user', 'csrf'))
+    ->begin(); ?>
+
+<div class="mb-2"></div>
+<div class="row">
     <div class="col-12">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-            <h1 class="h3">Edit user #<?= $user->getId(); ?></h1>
-            <div class="btn-toolbar float-right">
-                <a class="btn btn-sm btn-info mx-sm-1 mb-2" href="<?= $url->generate('/user/default/view', ['id' => $user->getId()]); ?>">
-                    <?= Icon::widget()->name('eye')->options(['class' => 'mr-1']); ?>
-                    View
-                </a>
-                <a class="btn btn-sm btn-outline-secondary mx-sm-1 mb-2" href="<?= $url->generate('/user/default/index'); ?>">
-                    Back
-                </a>
-            </div>
-        </div>
+        <?= FlashMessage::widget(); ?>
     </div>
 </div>
 <div class="mb-2"></div>
-<?= $this->render('_form', compact('csrf', 'field', 'form')) ?>
+
+<div class="row">
+    <div class="col-12">
+        <?= $this->render('_form', compact('csrf', 'field', 'form')) ?>
+    </div>
+</div>
+
+<?= ContentDecorator::end() ?>

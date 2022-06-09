@@ -26,12 +26,14 @@ use Yiisoft\Form\Widget\Form;
 
         <?= $field->select(
                 $form,
-                'role',
+                'roles',
                 [
                     'class' => Select::class,
                     'items()' => [$form->getRoleListOptions()],
-                    'clearable()' => [false],
+                    'multiple()' => [true],
+                    'taggable()' => [true],
                     'searchable()' => [false],
+                    'clearable()' => [false],
                 ]
             ); ?>
 

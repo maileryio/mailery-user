@@ -32,9 +32,9 @@ class UserValueObject
     private string $password;
 
     /**
-     * @var string
+     * @var array
      */
-    private string $role;
+    private array $roles;
 
     /**
      * @var string
@@ -51,7 +51,7 @@ class UserValueObject
         $new->email = $form->getEmail();
         $new->username = $form->getUsername();
         $new->password = $form->getPassword();
-        $new->role = $form->getRole();
+        $new->roles = $form->getRoles();
         $new->status = $form->getStatus();
 
         return $new;
@@ -82,11 +82,11 @@ class UserValueObject
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getRole(): string
+    public function getRoles(): array
     {
-        return $this->role;
+        return $this->roles;
     }
 
     /**
