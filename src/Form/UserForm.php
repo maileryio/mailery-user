@@ -107,8 +107,6 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
 
         if (isset($data[$scope]['roles'])) {
             $data[$scope]['roles'] = array_filter((array) $data[$scope]['roles']);
-        } else {
-            $data[$scope]['roles'] = [];
         }
 
         return parent::load($data, $formName);
