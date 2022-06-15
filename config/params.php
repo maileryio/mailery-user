@@ -13,9 +13,16 @@ declare(strict_types=1);
 use Yiisoft\Router\UrlGeneratorInterface;
 use Mailery\User\Console\CreateCommand;
 use Mailery\User\Console\AssignRoleCommand;
-use Mailery\Menu\MenuItem;
-use Yiisoft\Definitions\DynamicReference;
 use Mailery\User\Entity\User;
+use Mailery\User\Setting\UserSettingGroup;
+use Mailery\Menu\MenuItem;
+use Mailery\Setting\Form\SettingForm;
+use Yiisoft\Definitions\DynamicReference;
+use Yiisoft\Definitions\Reference;
+use Yiisoft\Form\Widget\Field;
+use Yiisoft\Validator\Rule\Required;
+use Yiisoft\Validator\Rule\HasLength;
+use Yiisoft\Validator\Rule\Email;
 
 return [
     'yiisoft/yii-console' => [
@@ -85,6 +92,36 @@ return [
                             return strtok($urlGenerator->generate('/user/auth/logout'), '?');
                         },
                         'method' => MenuItem::METHOD_POST,
+                    ],
+                ],
+            ],
+        ],
+    ],
+
+    'maileryio/mailery-setting' => [
+        'groups' => [
+            'user' => [
+                'reference' => Reference::to(UserSettingGroup::class),
+                'items' => [
+                    UserSettingGroup::PARAM_DEFAULT_TIMEZONE => [
+                        'name' => UserSettingGroup::PARAM_DEFAULT_TIMEZONE,
+                        'label' => static function () {
+                            return 'Default user timezone';
+                        },
+                        'description' => static function () {
+                            return 'This time zone is used as the default time zone for creating users';
+                        },
+                        'field' => static function (Field $field, SettingForm $form) {
+                            return $field->text($form, UserSettingGroup::PARAM_DEFAULT_TIMEZONE);
+                        },
+                        'rules' => static function () {
+                            return [
+                                Required::rule(),
+                                Email::rule(),
+                                HasLength::rule()->max(255),
+                            ];
+                        },
+                        'value' => 'Europe/Kiev',
                     ],
                 ],
             ],

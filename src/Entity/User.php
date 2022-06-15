@@ -58,6 +58,9 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     #[Column(type: 'enum(active, disabled)')]
     private string $status;
 
+    #[Column(type: 'string')]
+    private string $timezone;
+
     #[Column(type: 'datetime')]
     private \DateTimeImmutable $createdAt;
 
@@ -172,6 +175,25 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTimezone(): string
+    {
+        return $this->timezone;
+    }
+
+    /**
+     * @param string $timezone
+     * @return self
+     */
+    public function setTimezone(string $timezone): self
+    {
+        $this->timezone = $timezone;
 
         return $this;
     }
