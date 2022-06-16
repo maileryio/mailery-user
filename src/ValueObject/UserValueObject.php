@@ -42,6 +42,11 @@ class UserValueObject
     private string $status;
 
     /**
+     * @var string
+     */
+    private string $timezone;
+
+    /**
      * @param UserForm $form
      * @return self
      */
@@ -53,6 +58,7 @@ class UserValueObject
         $new->password = $form->getPassword();
         $new->roles = $form->getRoles();
         $new->status = $form->getStatus();
+        $new->timezone = $form->getTimezone();
 
         return $new;
     }
@@ -98,62 +104,10 @@ class UserValueObject
     }
 
     /**
-     * @param string $email
-     * @return self
+     * @return string
      */
-    public function withEmail(string $email): self
+    public function getTimezone(): string
     {
-        $new = clone $this;
-        $new->email = $email;
-
-        return $new;
-    }
-
-    /**
-     * @param string $username
-     * @return self
-     */
-    public function withUsername(string $username): self
-    {
-        $new = clone $this;
-        $new->username = $username;
-
-        return $new;
-    }
-
-    /**
-     * @param string $password
-     * @return self
-     */
-    public function withPassword(string $password): self
-    {
-        $new = clone $this;
-        $new->password = $password;
-
-        return $new;
-    }
-
-    /**
-     * @param string $role
-     * @return self
-     */
-    public function withRole(string $role): self
-    {
-        $new = clone $this;
-        $new->role = $role;
-
-        return $new;
-    }
-
-    /**
-     * @param string $status
-     * @return self
-     */
-    public function withStatus(string $status): self
-    {
-        $new = clone $this;
-        $new->status = $status;
-
-        return $new;
+        return $this->timezone;
     }
 }

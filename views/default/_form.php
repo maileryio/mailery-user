@@ -48,6 +48,17 @@ use Yiisoft\Form\Widget\Form;
                 ]
             ); ?>
 
+        <?= $field->select(
+                $form,
+                'timezone',
+                [
+                    'class' => Select::class,
+                    'items()' => [$form->getTimezoneListOptions()],
+                    'clearable()' => [false],
+                    'searchable()' => [true],
+                ]
+            ); ?>
+
         <?= $field->submitButton()
                 ->class('btn btn-primary float-right mt-2')
                 ->value('Save'); ?>

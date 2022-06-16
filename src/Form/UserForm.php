@@ -14,6 +14,8 @@ namespace Mailery\User\Form;
 
 use Mailery\User\Entity\User;
 use Mailery\User\Repository\UserRepository;
+use Mailery\User\Setting\UserSettingGroup;
+use Mailery\User\Model\Timezones;
 use Yiisoft\Rbac\StorageInterface;
 use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\Role;
@@ -62,6 +64,11 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     private ?string $status = null;
 
     /**
+     * @var string|null
+     */
+    private ?string $timezone = null;
+
+    /**
      * @var User|null
      */
     private ?User $user = null;
@@ -70,11 +77,13 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
      * @param UserRepository $userRepo
      * @param Manager $manager
      * @param StorageInterface $storage
+     * @param UserSettingGroup $settings
      */
     public function __construct(
         private UserRepository $userRepo,
         private Manager $manager,
-        private StorageInterface $storage
+        private StorageInterface $storage,
+        private UserSettingGroup $settings
     ) {
         parent::__construct();
     }
@@ -90,6 +99,7 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
         $new->email = $user->getEmail();
         $new->username = $user->getUsername();
         $new->status = $user->getStatus();
+        $new->timezone = $user->getTimezone();
         $new->roles = array_map(
             fn (Role $role) => $role->getName(),
             $this->manager->getRolesByUser($user->getId())
@@ -113,25 +123,25 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getUsername(): ?string
+    public function getUsername(): string
     {
         return $this->username;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -145,11 +155,19 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getStatus(): ?string
+    public function getStatus(): string
     {
         return $this->status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTimezone(): string
+    {
+        return $this->timezone;
     }
 
     /**
@@ -164,6 +182,7 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
             'confirmPassword' => 'Confirm password',
             'roles' => 'Roles',
             'status' => 'Status',
+            'timezone' => 'Timezone',
         ];
     }
 
@@ -230,6 +249,10 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
                 Required::rule(),
                 InRange::rule(array_keys($this->getStatusListOptions())),
             ],
+            'timezone' => [
+                Required::rule(),
+                InRange::rule(array_keys($this->getTimezoneListOptions())),
+            ],
         ];
     }
 
@@ -256,6 +279,16 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
             User::STATUS_ACTIVE => 'Active',
             User::STATUS_DISABLED => 'Disabled',
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getTimezoneListOptions(): array
+    {
+        return (new Timezones())
+            ->withNearestBy($this->settings->getDefaultCountry()->getValue())
+            ->getAll();
     }
 
 }

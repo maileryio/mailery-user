@@ -3,10 +3,13 @@
 use Mailery\User\Entity\User;
 use Mailery\Widget\Dataview\DetailView;
 use Yiisoft\Yii\Widgets\ContentDecorator;
+use Yiisoft\Html\Html;
 
 /** @var Yiisoft\Yii\WebView $this */
 /** @var Psr\Http\Message\ServerRequestInterface $request */
 /** @var Mailery\User\Entity\User $user */
+/** @var Yiisoft\Rbac\Manager $manager */
+/** @var Yiisoft\Router\UrlGeneratorInterface $url */
 /** @var Yiisoft\Yii\View\Csrf $csrf */
 
 $this->setTitle($user->getUsername());
@@ -44,9 +47,28 @@ $this->setTitle($user->getUsername());
                     },
                 ],
                 [
+                    'label' => 'Roles',
+                    'value' => function (User $data, $index) use($manager, $url) {
+                        $links = [];
+                        foreach ($manager->getRolesByUser($data->getId()) as $role) {
+                            $links[] = Html::a(
+                                $role->getName(),
+                                $url->generate('/rbac/role/view', ['name' => $role->getName()])
+                            );
+                        }
+                        return implode('<br />', $links);
+                    },
+                ],
+                [
                     'label' => 'Status',
                     'value' => function (User $data, $index) {
                         return $data->getStatus();
+                    },
+                ],
+                [
+                    'label' => 'Timezone',
+                    'value' => function (User $data, $index) {
+                        return $data->getTimezone();
                     },
                 ],
             ]);

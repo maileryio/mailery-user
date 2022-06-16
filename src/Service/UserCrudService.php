@@ -43,6 +43,7 @@ class UserCrudService
             ->setUsername($valueObject->getUsername())
             ->setPassword($valueObject->getPassword())
             ->setStatus($valueObject->getStatus())
+            ->setTimezone($valueObject->getTimezone())
         ;
 
         (new EntityWriter($this->orm))->write([$user]);
@@ -68,6 +69,7 @@ class UserCrudService
             ->setUsername($valueObject->getUsername())
             ->setPassword($valueObject->getPassword())
             ->setStatus($valueObject->getStatus())
+            ->setTimezone($valueObject->getTimezone())
         ;
 
         (new EntityWriter($this->orm))->write([$user]);

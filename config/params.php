@@ -103,13 +103,32 @@ return [
             'user' => [
                 'reference' => Reference::to(UserSettingGroup::class),
                 'items' => [
+                    UserSettingGroup::PARAM_DEFAULT_COUNTRY => [
+                        'name' => UserSettingGroup::PARAM_DEFAULT_COUNTRY,
+                        'label' => static function () {
+                            return 'Default user country';
+                        },
+                        'description' => static function () {
+                            return 'Default two-letter country code';
+                        },
+                        'field' => static function (Field $field, SettingForm $form) {
+                            return $field->text($form, UserSettingGroup::PARAM_DEFAULT_COUNTRY);
+                        },
+                        'rules' => static function () {
+                            return [
+                                Required::rule(),
+                                HasLength::rule()->max(255),
+                            ];
+                        },
+                        'value' => 'UA',
+                    ],
                     UserSettingGroup::PARAM_DEFAULT_TIMEZONE => [
                         'name' => UserSettingGroup::PARAM_DEFAULT_TIMEZONE,
                         'label' => static function () {
                             return 'Default user timezone';
                         },
                         'description' => static function () {
-                            return 'This time zone is used as the default time zone for creating users';
+                            return 'This timezone is used as the default time zone for creating users';
                         },
                         'field' => static function (Field $field, SettingForm $form) {
                             return $field->text($form, UserSettingGroup::PARAM_DEFAULT_TIMEZONE);
@@ -117,7 +136,6 @@ return [
                         'rules' => static function () {
                             return [
                                 Required::rule(),
-                                Email::rule(),
                                 HasLength::rule()->max(255),
                             ];
                         },

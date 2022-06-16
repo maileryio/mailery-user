@@ -27,6 +27,7 @@ use Psr\Http\Message\ResponseFactoryInterface as ResponseFactory;
 use Mailery\User\ValueObject\UserValueObject;
 use Yiisoft\Validator\ValidatorInterface;
 use Yiisoft\Session\Flash\FlashInterface;
+use Yiisoft\Rbac\Manager;
 use Yiisoft\Router\CurrentRoute;
 use Yiisoft\User\CurrentUser;
 
@@ -79,16 +80,17 @@ class DefaultController
 
     /**
      * @param CurrentRoute $currentRoute
+     * @param Manager $manager
      * @return Response
      */
-    public function view(CurrentRoute $currentRoute): Response
+    public function view(CurrentRoute $currentRoute, Manager $manager): Response
     {
         $userId = $currentRoute->getArgument('id');
         if (empty($userId) || ($user = $this->userRepo->findByPK($userId)) === null) {
             return $this->responseFactory->createResponse(Status::NOT_FOUND);
         }
 
-        return $this->viewRenderer->render('view', compact('user'));
+        return $this->viewRenderer->render('view', compact('user', 'manager'));
     }
 
     /**
