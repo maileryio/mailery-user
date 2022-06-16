@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 namespace Mailery\User\Form;
 
+use Mailery\Common\Model\Timezones;
 use Mailery\User\Entity\User;
 use Mailery\User\Repository\UserRepository;
 use Mailery\User\Setting\UserSettingGroup;
-use Mailery\User\Model\Timezones;
 use Yiisoft\Rbac\StorageInterface;
 use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\Role;
