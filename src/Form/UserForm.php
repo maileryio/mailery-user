@@ -12,8 +12,12 @@ declare(strict_types=1);
 
 namespace Mailery\User\Form;
 
+use Mailery\Common\Model\Countries;
 use Mailery\Common\Model\Timezones;
 use Mailery\User\Entity\User;
+use Mailery\User\Field\UserStatus;
+use Mailery\Common\Field\Country;
+use Mailery\Common\Field\Timezone;
 use Mailery\User\Repository\UserRepository;
 use Mailery\User\Setting\UserSettingGroup;
 use Yiisoft\Rbac\StorageInterface;
@@ -66,12 +70,17 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     /**
      * @var string|null
      */
+    private ?string $country = null;
+
+    /**
+     * @var string|null
+     */
     private ?string $timezone = null;
 
     /**
      * @var User|null
      */
-    private ?User $user = null;
+    private ?User $entity = null;
 
     /**
      * @param UserRepository $userRepo
@@ -89,23 +98,32 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     }
 
     /**
-     * @param User $user
+     * @param User $entity
      * @return self
      */
-    public function withEntity(User $user): self
+    public function withEntity(User $entity): self
     {
         $new = clone $this;
-        $new->user = $user;
-        $new->email = $user->getEmail();
-        $new->username = $user->getUsername();
-        $new->status = $user->getStatus();
-        $new->timezone = $user->getTimezone();
+        $new->entity = $entity;
+        $new->email = $entity->getEmail();
+        $new->username = $entity->getUsername();
+        $new->status = $entity->getStatus()->getValue();
+        $new->country = $entity->getCountry()->getValue();
+        $new->timezone = $entity->getTimezone()->getValue();
         $new->roles = array_map(
             fn (Role $role) => $role->getName(),
-            $this->manager->getRolesByUser($user->getId())
+            $this->manager->getRolesByUser($entity->getId())
         );
 
         return $new;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasEntity(): bool
+    {
+        return $this->entity !== null;
     }
 
     /**
@@ -155,19 +173,27 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     }
 
     /**
-     * @return string
+     * @return UserStatus
      */
-    public function getStatus(): string
+    public function getStatus(): UserStatus
     {
-        return $this->status;
+        return UserStatus::typecast($this->status);
     }
 
     /**
-     * @return string
+     * @return Country
      */
-    public function getTimezone(): string
+    public function getCountry(): Country
     {
-        return $this->timezone;
+        return Country::typecast($this->country);
+    }
+
+    /**
+     * @return Timezone
+     */
+    public function getTimezone(): Timezone
+    {
+        return Timezone::typecast($this->timezone);
     }
 
     /**
@@ -182,6 +208,7 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
             'confirmPassword' => 'Confirm password',
             'roles' => 'Roles',
             'status' => 'Status',
+            'country' => 'Country',
             'timezone' => 'Timezone',
         ];
     }
@@ -198,7 +225,7 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
                 HasLength::rule()->max(255),
                 Callback::rule(function ($value) {
                     $result = new Result();
-                    $record = $this->userRepo->findByEmail($value, $this->user);
+                    $record = $this->userRepo->findByEmail($value, $this->entity);
 
                     if ($record !== null) {
                         $result->addError('This email already exists.');
@@ -213,7 +240,7 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
                 MatchRegularExpression::rule('/^[a-zA-Z0-9]+$/i'),
                 Callback::rule(function ($value) {
                     $result = new Result();
-                    $record = $this->userRepo->findByUsername($value, $this->user);
+                    $record = $this->userRepo->findByUsername($value, $this->entity);
 
                     if ($record !== null) {
                         $result->addError('This username already exists.');
@@ -249,6 +276,10 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
                 Required::rule(),
                 InRange::rule(array_keys($this->getStatusListOptions())),
             ],
+            'country' => [
+                Required::rule(),
+                InRange::rule(array_keys($this->getCountryListOptions())),
+            ],
             'timezone' => [
                 Required::rule(),
                 InRange::rule(array_keys($this->getTimezoneListOptions())),
@@ -275,10 +306,21 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
      */
     public function getStatusListOptions(): array
     {
+        $active = UserStatus::asActive();
+        $disabled = UserStatus::asDisabled();
+
         return [
-            User::STATUS_ACTIVE => 'Active',
-            User::STATUS_DISABLED => 'Disabled',
+            $active->getValue() => $active->getLabel(),
+            $disabled->getValue() => $disabled->getLabel(),
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getCountryListOptions(): array
+    {
+        return (new Countries())->getAll();
     }
 
     /**
@@ -287,6 +329,7 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     public function getTimezoneListOptions(): array
     {
         return (new Timezones())
+            ->withOffset(true)
             ->withNearestBy($this->settings->getDefaultCountry()->getValue())
             ->getAll();
     }

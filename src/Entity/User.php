@@ -19,6 +19,9 @@ use Mailery\Activity\Log\Entity\LoggableEntityInterface;
 use Yiisoft\Security\PasswordHasher;
 use Cycle\Annotated\Annotation\Entity;
 use Cycle\Annotated\Annotation\Column;
+use Mailery\Common\Field\Country;
+use Mailery\Common\Field\Timezone;
+use Mailery\User\Field\UserStatus;
 use Mailery\User\Repository\UserRepository;
 use Cycle\ORM\Entity\Behavior;
 use Mailery\Activity\Log\Mapper\LoggableMapper;
@@ -40,9 +43,6 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
 {
     use LoggableEntityTrait;
 
-    const STATUS_ACTIVE = 'active';
-    const STATUS_DISABLED = 'disabled';
-
     #[Column(type: 'primary')]
     private int $id;
 
@@ -55,11 +55,14 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     #[Column(type: 'string(255)')]
     private string $password;
 
-    #[Column(type: 'enum(active, disabled)')]
-    private string $status;
+    #[Column(type: 'enum(active, disabled)', typecast: UserStatus::class)]
+    private UserStatus $status;
 
-    #[Column(type: 'string')]
-    private string $timezone;
+    #[Column(type: 'string(2)', typecast: Country::class)]
+    protected Country $country;
+
+    #[Column(type: 'string(255)', typecast: Timezone::class)]
+    private Timezone $timezone;
 
     #[Column(type: 'datetime')]
     private \DateTimeImmutable $createdAt;
@@ -161,18 +164,18 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     }
 
     /**
-     * @return string
+     * @return UserStatus
      */
-    public function getStatus(): string
+    public function getStatus(): UserStatus
     {
         return $this->status;
     }
 
     /**
-     * @param string $status
+     * @param UserStatus $status
      * @return self
      */
-    public function setStatus(string $status): self
+    public function setStatus(UserStatus $status): self
     {
         $this->status = $status;
 
@@ -180,18 +183,37 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     }
 
     /**
-     * @return string
+     * @return Country
      */
-    public function getTimezone(): string
+    public function getCountry(): Country
+    {
+        return $this->country;
+    }
+
+    /**
+     * @param Country $country
+     * @return self
+     */
+    public function setCountry(Country $country): self
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    /**
+     * @return Timezone
+     */
+    public function getTimezone(): Timezone
     {
         return $this->timezone;
     }
 
     /**
-     * @param string $timezone
+     * @param Timezone $timezone
      * @return self
      */
-    public function setTimezone(string $timezone): self
+    public function setTimezone(Timezone $timezone): self
     {
         $this->timezone = $timezone;
 

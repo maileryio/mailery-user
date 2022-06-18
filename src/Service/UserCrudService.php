@@ -43,6 +43,7 @@ class UserCrudService
             ->setUsername($valueObject->getUsername())
             ->setPassword($valueObject->getPassword())
             ->setStatus($valueObject->getStatus())
+            ->setCountry($valueObject->getCountry())
             ->setTimezone($valueObject->getTimezone())
         ;
 
@@ -69,6 +70,7 @@ class UserCrudService
             ->setUsername($valueObject->getUsername())
             ->setPassword($valueObject->getPassword())
             ->setStatus($valueObject->getStatus())
+            ->setCountry($valueObject->getCountry())
             ->setTimezone($valueObject->getTimezone())
         ;
 

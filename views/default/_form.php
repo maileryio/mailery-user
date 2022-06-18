@@ -5,7 +5,7 @@ use Yiisoft\Form\Widget\Form;
 
 /** @var Yiisoft\Form\Widget\Field $field */
 /** @var Yiisoft\View\WebView $this */
-/** @var Yiisoft\Form\FormModelInterface $form */
+/** @var Mailery\User\Form\UserForm $form */
 /** @var Yiisoft\Yii\View\Csrf $csrf */
 
 ?>
@@ -50,6 +50,17 @@ use Yiisoft\Form\Widget\Form;
 
         <?= $field->select(
                 $form,
+                'country',
+                [
+                    'class' => Select::class,
+                    'items()' => [$form->getCountryListOptions()],
+                    'clearable()' => [false],
+                    'searchable()' => [true],
+                ]
+            ); ?>
+
+        <?= $field->select(
+                $form,
                 'timezone',
                 [
                     'class' => Select::class,
@@ -61,7 +72,7 @@ use Yiisoft\Form\Widget\Form;
 
         <?= $field->submitButton()
                 ->class('btn btn-primary float-right mt-2')
-                ->value('Save'); ?>
+                ->value($form->hasEntity() ? 'Save changes' : 'Add user'); ?>
 
         <?= Form::end(); ?>
     </div>

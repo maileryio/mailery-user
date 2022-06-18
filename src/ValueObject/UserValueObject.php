@@ -13,6 +13,9 @@ declare(strict_types=1);
 namespace Mailery\User\ValueObject;
 
 use Mailery\User\Form\UserForm;
+use Mailery\User\Field\UserStatus;
+use Mailery\Common\Field\Country;
+use Mailery\Common\Field\Timezone;
 
 class UserValueObject
 {
@@ -37,14 +40,19 @@ class UserValueObject
     private array $roles;
 
     /**
-     * @var string
+     * @var UserStatus
      */
-    private string $status;
+    private UserStatus $status;
 
     /**
-     * @var string
+     * @var Country
      */
-    private string $timezone;
+    private Country $country;
+
+    /**
+     * @var Timezone
+     */
+    private Timezone $timezone;
 
     /**
      * @param UserForm $form
@@ -59,6 +67,7 @@ class UserValueObject
         $new->roles = $form->getRoles();
         $new->status = $form->getStatus();
         $new->timezone = $form->getTimezone();
+        $new->country = $form->getCountry();
 
         return $new;
     }
@@ -96,17 +105,25 @@ class UserValueObject
     }
 
     /**
-     * @return string
+     * @return UserStatus
      */
-    public function getStatus(): string
+    public function getStatus(): UserStatus
     {
         return $this->status;
     }
 
     /**
-     * @return string
+     * @return Country
      */
-    public function getTimezone(): string
+    public function getCountry(): Country
+    {
+        return $this->country;
+    }
+
+    /**
+     * @return Timezone
+     */
+    public function getTimezone(): Timezone
     {
         return $this->timezone;
     }

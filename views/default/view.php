@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 use Mailery\User\Entity\User;
-use Mailery\Widget\Dataview\DetailView;
+use Yiisoft\Yii\DataView\DetailView;
 use Yiisoft\Yii\Widgets\ContentDecorator;
 use Yiisoft\Html\Html;
 
@@ -25,14 +25,11 @@ $this->setTitle($user->getUsername());
 <div class="row">
     <div class="col-12">
         <?= DetailView::widget()
-            ->data($user)
+            ->model($user)
             ->options([
                 'class' => 'table detail-view',
             ])
-            ->emptyText('(not set)')
-            ->emptyTextOptions([
-                'class' => 'text-muted',
-            ])
+            ->emptyValue('<span class="text-muted">(not set)</span>')
             ->attributes([
                 [
                     'label' => 'Email',
@@ -62,13 +59,19 @@ $this->setTitle($user->getUsername());
                 [
                     'label' => 'Status',
                     'value' => function (User $data, $index) {
-                        return $data->getStatus();
+                        return '<span class="badge ' . $data->getStatus()->getCssClass() . '">' . $data->getStatus()->getLabel() . '</span>';
+                    },
+                ],
+                [
+                    'label' => 'Country',
+                    'value' => function (User $data, $index) {
+                        return $data->getCountry()->getLabel();
                     },
                 ],
                 [
                     'label' => 'Timezone',
                     'value' => function (User $data, $index) {
-                        return $data->getTimezone();
+                        return $data->getTimezone()->getLabel();
                     },
                 ],
             ]);

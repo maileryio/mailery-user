@@ -76,8 +76,16 @@ $this->setTitle('All users');
                             'value()' => [fn (User $model) => Html::a($model->getEmail(), $url->generate($model->getViewRouteName(), $model->getViewRouteParams()))],
                         ],
                         [
+                            'label()' => ['Country'],
+                            'value()' => [fn (User $model) => $model->getCountry()->getLabel()],
+                        ],
+                        [
+                            'label()' => ['Timezone'],
+                            'value()' => [fn (User $model) => $model->getTimezone()->getLabel()],
+                        ],
+                        [
                             'label()' => ['Status'],
-                            'value()' => [fn (User $model) => $model->getStatus()],
+                            'value()' => [fn (User $model) => '<span class="badge ' . $model->getStatus()->getCssClass() . '">' . $model->getStatus()->getLabel() . '</span>'],
                         ],
                         [
                             'label()' => ['Edit'],
