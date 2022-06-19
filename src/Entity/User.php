@@ -59,7 +59,7 @@ class User implements IdentityInterface, RoutableEntityInterface, LoggableEntity
     private UserStatus $status;
 
     #[Column(type: 'string(2)', typecast: Country::class)]
-    protected Country $country;
+    private Country $country;
 
     #[Column(type: 'string(255)', typecast: Timezone::class)]
     private Timezone $timezone;

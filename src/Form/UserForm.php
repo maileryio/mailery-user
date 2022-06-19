@@ -94,6 +94,9 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
         private StorageInterface $storage,
         private UserSettingGroup $settings
     ) {
+        $this->country = $this->settings->getDefaultCountry()->getValue();
+        $this->timezone = $this->settings->getDefaultTimezone()->getValue();
+
         parent::__construct();
     }
 
@@ -330,7 +333,7 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     {
         return (new Timezones())
             ->withOffset(true)
-            ->withNearestBy($this->settings->getDefaultCountry()->getValue())
+            ->withNearestBy($this->country)
             ->getAll();
     }
 

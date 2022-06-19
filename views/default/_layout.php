@@ -23,7 +23,7 @@ $this->setTitle($user->getUsername());
                     <div class="col-md">
                         <h4 class="mb-0">User #<?= $user->getId(); ?></h4>
                         <p class="mt-1 mb-0 small">
-                            Changed at <?= DateTimeFormat::widget()->dateTime($user->getUpdatedAt())->run() ?>
+                            Changed at <?= DateTimeFormat::widget()->dateTime($user->getUpdatedAt()) ?>
                         </p>
                     </div>
                     <div class="col-auto">
