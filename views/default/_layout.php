@@ -2,8 +2,6 @@
 
 use Mailery\Activity\Log\Widget\ActivityLogLink;
 use Mailery\Icon\Icon;
-use Mailery\User\Entity\User;
-use Mailery\Widget\Dataview\DetailView;
 use Mailery\Widget\Link\Link;
 use Mailery\Web\Widget\DateTimeFormat;
 use Yiisoft\Yii\Bootstrap5\Nav;
@@ -34,6 +32,12 @@ $this->setTitle($user->getUsername());
                                 ->method('delete')
                                 ->href($url->generate('/user/default/delete', ['id' => $user->getId()]))
                                 ->confirm('Are you sure?')
+                                ->afterRequest(<<<JS
+                                    (res) => {
+                                        res.redirected && res.url && (window.location.href = res.url);
+                                    }
+                                    JS
+                                )
                                 ->options([
                                     'class' => 'btn btn-sm btn-danger mx-sm-1 mb-2',
                                 ])
