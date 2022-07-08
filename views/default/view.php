@@ -47,7 +47,7 @@ $this->setTitle($user->getUsername());
                     'label' => 'Roles',
                     'value' => function (User $data, $index) use($manager, $url) {
                         $links = [];
-                        foreach ($manager->getRolesByUser($data->getId()) as $role) {
+                        foreach ($manager->getRolesByUserId($data->getId()) as $role) {
                             $links[] = Html::a(
                                 $role->getName(),
                                 $url->generate('/rbac/role/view', ['name' => $role->getName()])

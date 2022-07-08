@@ -20,7 +20,7 @@ use Mailery\Common\Field\Country;
 use Mailery\Common\Field\Timezone;
 use Mailery\User\Repository\UserRepository;
 use Mailery\User\Setting\UserSettingGroup;
-use Yiisoft\Rbac\StorageInterface;
+use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Validator\Rule\Required;
@@ -85,13 +85,13 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     /**
      * @param UserRepository $userRepo
      * @param Manager $manager
-     * @param StorageInterface $storage
+     * @param ItemsStorageInterface $itemsStorage
      * @param UserSettingGroup $settings
      */
     public function __construct(
         private UserRepository $userRepo,
         private Manager $manager,
-        private StorageInterface $storage,
+        private ItemsStorageInterface $itemsStorage,
         private UserSettingGroup $settings
     ) {
         $this->country = $this->settings->getDefaultCountry()->getValue();
@@ -115,7 +115,7 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
         $new->timezone = $entity->getTimezone()->getValue();
         $new->roles = array_map(
             fn (Role $role) => $role->getName(),
-            $this->manager->getRolesByUser($entity->getId())
+            $this->manager->getRolesByUserId($entity->getId())
         );
 
         return $new;
@@ -132,7 +132,7 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     /**
      * @inheritdoc
      */
-    public function load(array $data, ?string $formName = null): bool
+    public function load(array|object|null $data, ?string $formName = null): bool
     {
         $scope = $formName ?? $this->getFormName();
 
@@ -296,7 +296,7 @@ class UserForm extends FormModel implements \Yiisoft\Form\FormModelInterface
     public function getRoleListOptions(): array
     {
         $roles = [];
-        foreach ($this->storage->getRoles() as $role) {
+        foreach ($this->itemsStorage->getRoles() as $role) {
             /** @var Role $role */
             $roles[$role->getName()] = $role->getName();
         }

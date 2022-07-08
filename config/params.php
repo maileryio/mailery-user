@@ -19,10 +19,9 @@ use Mailery\Menu\MenuItem;
 use Mailery\Setting\Form\SettingForm;
 use Yiisoft\Definitions\DynamicReference;
 use Yiisoft\Definitions\Reference;
-use Yiisoft\Form\Widget\Field;
+use Yiisoft\Form\Field;
 use Yiisoft\Validator\Rule\Required;
 use Yiisoft\Validator\Rule\HasLength;
-use Yiisoft\Validator\Rule\Email;
 
 return [
     'yiisoft/yii-console' => [
@@ -111,8 +110,8 @@ return [
                         'description' => static function () {
                             return 'Default two-letter country code';
                         },
-                        'field' => static function (Field $field, SettingForm $form) {
-                            return $field->text($form, UserSettingGroup::PARAM_DEFAULT_COUNTRY);
+                        'field' => static function (SettingForm $form) {
+                            return Field::text($form, UserSettingGroup::PARAM_DEFAULT_COUNTRY);
                         },
                         'rules' => static function () {
                             return [
@@ -130,8 +129,8 @@ return [
                         'description' => static function () {
                             return 'This timezone is used as the default time zone for creating users';
                         },
-                        'field' => static function (Field $field, SettingForm $form) {
-                            return $field->text($form, UserSettingGroup::PARAM_DEFAULT_TIMEZONE);
+                        'field' => static function (SettingForm $form) {
+                            return Field::text($form, UserSettingGroup::PARAM_DEFAULT_TIMEZONE);
                         },
                         'rules' => static function () {
                             return [

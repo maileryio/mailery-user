@@ -12,24 +12,24 @@ declare(strict_types=1);
 
 namespace Mailery\User\Service;
 
-use Cycle\ORM\ORMInterface;
+use Cycle\ORM\EntityManagerInterface;
 use Mailery\User\Entity\User;
 use Mailery\User\ValueObject\UserValueObject;
 use Yiisoft\Rbac\Manager;
-use Yiisoft\Rbac\StorageInterface;
+use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Yii\Cycle\Data\Writer\EntityWriter;
 
 class UserCrudService
 {
     /**
-     * @param ORMInterface $orm
+     * @param EntityManagerInterface $entityManager
      * @param Manager $manager
-     * @param StorageInterface $storage
+     * @param ItemsStorageInterface $itemsStorage
      */
     public function __construct(
-        private ORMInterface $orm,
+        private EntityManagerInterface $entityManager,
         private Manager $manager,
-        private StorageInterface $storage
+        private ItemsStorageInterface $itemsStorage
     ) {}
 
     /**
@@ -47,11 +47,11 @@ class UserCrudService
             ->setTimezone($valueObject->getTimezone())
         ;
 
-        (new EntityWriter($this->orm))->write([$user]);
+        (new EntityWriter($this->entityManager))->write([$user]);
 
         foreach ($valueObject->getRoles() as $roleName) {
-            if (($role = $this->storage->getRoleByName($roleName)) !== null) {
-                $this->manager->assign($role, $user->getId());
+            if (($role = $this->itemsStorage->getRole($roleName)) !== null) {
+                $this->manager->assign($role->getName(), $user->getId());
             }
         }
 
@@ -74,15 +74,15 @@ class UserCrudService
             ->setTimezone($valueObject->getTimezone())
         ;
 
-        (new EntityWriter($this->orm))->write([$user]);
+        (new EntityWriter($this->entityManager))->write([$user]);
 
-        foreach ($this->manager->getRolesByUser($user->getId()) as $role) {
+        foreach ($this->manager->getRolesByUserId($user->getId()) as $role) {
             $this->manager->revoke($role, $user->getId());
         }
 
         foreach ($valueObject->getRoles() as $roleName) {
-            if (($role = $this->storage->getRoleByName($roleName)) !== null) {
-                $this->manager->assign($role, $user->getId());
+            if (($role = $this->itemsStorage->getRole($roleName)) !== null) {
+                $this->manager->assign($role->getName(), $user->getId());
             }
         }
 
@@ -95,7 +95,7 @@ class UserCrudService
      */
     public function delete(User $user): bool
     {
-        (new EntityWriter($this->orm))->delete([$user]);
+        (new EntityWriter($this->entityManager))->delete([$user]);
 
         return true;
     }

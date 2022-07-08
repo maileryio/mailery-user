@@ -13,7 +13,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\Role;
-use Yiisoft\Rbac\StorageInterface;
+use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Yii\Console\ExitCode;
 use Yiisoft\Yii\Cycle\Command\CycleDependencyProxy;
 
@@ -27,12 +27,12 @@ class AssignRoleCommand extends Command
     /**
      * @param CycleDependencyProxy $promise
      * @param Manager $manager
-     * @param StorageInterface $storage
+     * @param ItemsStorageInterface $itemsStorage
      */
     public function __construct(
         private CycleDependencyProxy $promise,
         private Manager $manager,
-        private StorageInterface $storage
+        private ItemsStorageInterface $itemsStorage
     ) {
         parent::__construct();
     }
@@ -70,7 +70,7 @@ class AssignRoleCommand extends Command
                 throw new \Exception('Can\'t find user');
             }
 
-            $role = $this->storage->getRoleByName($roleName);
+            $role = $this->itemsStorage->getRole($roleName);
 
             if (null === $role) {
                 $helper = $this->getHelper('question');

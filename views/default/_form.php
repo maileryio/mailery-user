@@ -1,9 +1,9 @@
 <?php
 
 use Mailery\Widget\Select\Select;
-use Yiisoft\Form\Widget\Form;
+use Yiisoft\Html\Tag\Form;
+use Yiisoft\Form\Field;
 
-/** @var Yiisoft\Form\Widget\Field $field */
 /** @var Yiisoft\View\WebView $this */
 /** @var Mailery\User\Form\UserForm $form */
 /** @var Yiisoft\Yii\View\Csrf $csrf */
@@ -11,25 +11,26 @@ use Yiisoft\Form\Widget\Form;
 ?>
 <div class="row">
     <div class="col-12">
-        <?= Form::widget()
+        <?= Form::tag()
                 ->csrf($csrf)
                 ->id('user-form')
-                ->begin(); ?>
+                ->post()
+                ->open(); ?>
 
-        <?= $field->email($form, 'email')->autofocus(); ?>
+        <?= Field::email($form, 'email')->autofocus(); ?>
 
-        <?= $field->text($form, 'username'); ?>
+        <?= Field::text($form, 'username'); ?>
 
-        <?= $field->password($form, 'password'); ?>
+        <?= Field::password($form, 'password'); ?>
 
-        <?= $field->password($form, 'confirmPassword'); ?>
+        <?= Field::password($form, 'confirmPassword'); ?>
 
-        <?= $field->select(
+        <?= Field::input(
+                Select::class,
                 $form,
                 'roles',
                 [
-                    'class' => Select::class,
-                    'items()' => [$form->getRoleListOptions()],
+                    'optionsData()' => [$form->getRoleListOptions()],
                     'multiple()' => [true],
                     'taggable()' => [true],
                     'searchable()' => [false],
@@ -37,43 +38,42 @@ use Yiisoft\Form\Widget\Form;
                 ]
             ); ?>
 
-        <?= $field->select(
+        <?= Field::input(
+                Select::class,
                 $form,
                 'status',
                 [
-                    'class' => Select::class,
-                    'items()' => [$form->getStatusListOptions()],
+                    'optionsData()' => [$form->getStatusListOptions()],
                     'clearable()' => [false],
                     'searchable()' => [false],
                 ]
             ); ?>
 
-        <?= $field->select(
+        <?= Field::input(
+                Select::class,
                 $form,
                 'country',
                 [
-                    'class' => Select::class,
-                    'items()' => [$form->getCountryListOptions()],
+                    'optionsData()' => [$form->getCountryListOptions()],
                     'clearable()' => [false],
                     'searchable()' => [true],
                 ]
             ); ?>
 
-        <?= $field->select(
+        <?= Field::input(
+                Select::class,
                 $form,
                 'timezone',
                 [
-                    'class' => Select::class,
-                    'items()' => [$form->getTimezoneListOptions()],
+                    'optionsData()' => [$form->getTimezoneListOptions()],
                     'clearable()' => [false],
                     'searchable()' => [true],
                 ]
             ); ?>
 
-        <?= $field->submitButton()
-                ->class('btn btn-primary float-right mt-2')
-                ->value($form->hasEntity() ? 'Save changes' : 'Add user'); ?>
+        <?= Field::submitButton()
+                ->content($form->hasEntity() ? 'Save changes' : 'Add user'); ?>
 
-        <?= Form::end(); ?>
+        <?= Form::tag()->close(); ?>
     </div>
 </div>

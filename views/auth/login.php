@@ -1,8 +1,8 @@
 <?php
 
-use Yiisoft\Form\Widget\Form;
+use Yiisoft\Html\Tag\Form;
+use Yiisoft\Form\Field;
 
-/** @var Yiisoft\Form\Widget\Field $field */
 /** @var Yiisoft\View\WebView $this */
 /** @var Yiisoft\Form\FormModelInterface $form */
 /** @var Yiisoft\Yii\View\Csrf $csrf */
@@ -14,20 +14,20 @@ use Yiisoft\Form\Widget\Form;
     <div class="col-6 offset-3">
         <div class="card mb-3">
             <div class="card-body">
-                <?= Form::widget()
+                <?= Form::tag()
                         ->csrf($csrf)
                         ->id('login-form')
-                        ->begin(); ?>
+                        ->post()
+                        ->open(); ?>
 
-                <?= $field->text($form, 'login')->autofocus(); ?>
+                <?= Field::text($form, 'login')->autofocus(); ?>
 
-                <?= $field->password($form, 'password'); ?>
+                <?= Field::password($form, 'password'); ?>
 
-                <?= $field->submitButton()
-                        ->class('btn btn-primary float-right mt-2')
-                        ->value('Login'); ?>
+                <?= Field::submitButton()
+                        ->content('Login'); ?>
 
-                <?= Form::end(); ?>
+                <?= Form::tag()->close(); ?>
             </div>
         </div>
     </div>
