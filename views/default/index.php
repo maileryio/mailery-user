@@ -7,6 +7,7 @@ use Mailery\Widget\Link\Link;
 use Mailery\Widget\Search\Widget\SearchWidget;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\DataView\GridView;
+use Mailery\Web\Vue\Directive;
 
 /** @var Yiisoft\Yii\WebView $this */
 /** @var Mailery\Widget\Search\Form\SearchForm $searchForm */
@@ -69,23 +70,23 @@ $this->setTitle('All users');
                     ->columns([
                         [
                             'label()' => ['Username'],
-                            'value()' => [fn (User $model) => $model->getUsername()],
+                            'value()' => [fn (User $model) => Directive::pre($model->getUsername())],
                         ],
                         [
                             'label()' => ['Email'],
-                            'value()' => [fn (User $model) => Html::a($model->getEmail(), $url->generate($model->getViewRouteName(), $model->getViewRouteParams()))],
+                            'value()' => [fn (User $model) => Html::a(Directive::pre($model->getEmail()), $url->generate($model->getViewRouteName(), $model->getViewRouteParams()))],
                         ],
                         [
                             'label()' => ['Country'],
-                            'value()' => [fn (User $model) => $model->getCountry()->getLabel()],
+                            'value()' => [fn (User $model) => Directive::pre($model->getCountry()->getLabel())],
                         ],
                         [
                             'label()' => ['Timezone'],
-                            'value()' => [fn (User $model) => $model->getTimezone()->getLabel()],
+                            'value()' => [fn (User $model) => Directive::pre($model->getTimezone()->getLabel())],
                         ],
                         [
                             'label()' => ['Status'],
-                            'value()' => [fn (User $model) => '<span class="badge ' . $model->getStatus()->getCssClass() . '">' . $model->getStatus()->getLabel() . '</span>'],
+                            'value()' => [fn (User $model) => '<span class="badge ' . $model->getStatus()->getCssClass() . '">' . Directive::pre($model->getStatus()->getLabel()) . '</span>'],
                         ],
                         [
                             'label()' => ['Edit'],

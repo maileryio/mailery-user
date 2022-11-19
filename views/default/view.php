@@ -4,6 +4,7 @@ use Mailery\User\Entity\User;
 use Yiisoft\Yii\DataView\DetailView;
 use Yiisoft\Yii\Widgets\ContentDecorator;
 use Yiisoft\Html\Html;
+use Mailery\Web\Vue\Directive;
 
 /** @var Yiisoft\Yii\WebView $this */
 /** @var Psr\Http\Message\ServerRequestInterface $request */
@@ -33,19 +34,19 @@ $this->setTitle($user->getUsername());
             ->attributes([
                 [
                     'label' => 'Email',
-                    'value' => function (User $data, $index) {
-                        return $data->getEmail();
+                    'value' => function (User $data) {
+                        return Directive::pre($data->getEmail());
                     },
                 ],
                 [
                     'label' => 'Username',
-                    'value' => function (User $data, $index) {
-                        return $data->getUsername();
+                    'value' => function (User $data) {
+                        return Directive::pre($data->getUsername());
                     },
                 ],
                 [
                     'label' => 'Roles',
-                    'value' => function (User $data, $index) use($manager, $url) {
+                    'value' => function (User $data) use($manager, $url) {
                         $links = [];
                         foreach ($manager->getRolesByUserId($data->getId()) as $role) {
                             $links[] = Html::a(
@@ -58,20 +59,20 @@ $this->setTitle($user->getUsername());
                 ],
                 [
                     'label' => 'Status',
-                    'value' => function (User $data, $index) {
-                        return '<span class="badge ' . $data->getStatus()->getCssClass() . '">' . $data->getStatus()->getLabel() . '</span>';
+                    'value' => function (User $data) {
+                        return '<span class="badge ' . $data->getStatus()->getCssClass() . '">' . Directive::pre($data->getStatus()->getLabel()) . '</span>';
                     },
                 ],
                 [
                     'label' => 'Country',
-                    'value' => function (User $data, $index) {
-                        return $data->getCountry()->getLabel();
+                    'value' => function (User $data) {
+                        return Directive::pre($data->getCountry()->getLabel());
                     },
                 ],
                 [
                     'label' => 'Timezone',
-                    'value' => function (User $data, $index) {
-                        return $data->getTimezone()->getLabel();
+                    'value' => function (User $data) {
+                        return Directive::pre($data->getTimezone()->getLabel());
                     },
                 ],
             ]);
